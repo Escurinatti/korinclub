@@ -317,6 +317,26 @@
   </div>
 </div>
 
+<div class="modal" id="modal-login">
+  <div class="modal-cx">
+    <h2>🔒 Entrar para editar</h2>
+    <p class="dica">Só quem tem a senha consegue editar. Quem recebe o link do grupo não vê esta tela.</p>
+    <div class="campo">
+      <label for="log-usuario">Usuário</label>
+      <input type="text" id="log-usuario" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="mae">
+    </div>
+    <div class="campo">
+      <label for="log-senha">Senha</label>
+      <input type="password" id="log-senha" autocomplete="current-password" placeholder="••••••••">
+    </div>
+    <div class="msg" id="msg-login"></div>
+    <div class="botoes" style="margin-top:14px;">
+      <button class="btn btn-principal" id="btn-entrar" type="button">Entrar</button>
+      <button class="btn btn-secundario" id="btn-cancelar-login" type="button">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal" id="modal-ajustes">
   <div class="modal-cx">
     <h2>⚙️ Ajustes</h2>
@@ -367,6 +387,7 @@
     </details>
 
     <button class="btn btn-principal" id="fechar-ajustes" type="button" style="margin-top:16px;">Pronto</button>
+    <button class="btn btn-perigo" id="btn-sair-conta" type="button">🚪 Sair da conta neste aparelho</button>
   </div>
 </div>
 
@@ -379,6 +400,73 @@ const BRANCH = 'main';
 const K_RASCUNHO = 'korin-rascunho-lista';
 const K_CHAVE = 'korin-chave';
 const K_PEDIDO = 'korin-pedido';
+const K_SESSAO = 'korin-sessao';
+
+/* ===== QUEM PODE EDITAR =====================================
+   A senha nao fica escrita aqui: guardamos so o "resumo" dela.
+   Para trocar uma senha e preciso gerar um resumo novo.
+   ============================================================ */
+const USUARIOS = [
+  { usuario: 'mae',       nome: 'Mãe',       hash: 'fe092ab4a2773892f29d11f9a3227a6427d53a096a7ab643ed7ce2429a4c7c89' },
+  { usuario: 'alexandre', nome: 'Alexandre', hash: '73efaf76acf4c315a67d8fe5318dbc962a26b049e78cf834cc131917998ca74f' }
+];
+
+let usuarioAtual = null;
+
+async function resumo(txt) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(txt));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function sessaoAtiva() {
+  try {
+    const s = JSON.parse(localStorage.getItem(K_SESSAO) || 'null');
+    if (!s) return null;
+    return USUARIOS.find(u => u.usuario === s.usuario) || null;
+  } catch (err) { return null; }
+}
+
+async function tentarEntrar() {
+  const u = $('log-usuario').value.trim().toLowerCase();
+  const s = $('log-senha').value;
+  if (!u || !s) { msg($('msg-login'), 'Preencha o usuário e a senha.', false); return; }
+
+  const achado = USUARIOS.find(x => x.usuario === u);
+  const calculado = await resumo(u + ':' + s);
+
+  if (!achado || calculado !== achado.hash) {
+    msg($('msg-login'), '❌ Usuário ou senha não confere.', false);
+    $('log-senha').value = '';
+    $('log-senha').focus();
+    return;
+  }
+
+  usuarioAtual = achado;
+  localStorage.setItem(K_SESSAO, JSON.stringify({ usuario: achado.usuario }));
+  $('log-senha').value = '';
+  $('msg-login').className = 'msg';
+  $('modal-login').classList.remove('on');
+  liberarLapis();
+  entrarEdicao();
+  toast('Olá, ' + achado.nome + ' ✏️');
+}
+
+function pedirLogin() {
+  msg($('msg-login'), '', true);
+  $('msg-login').className = 'msg';
+  $('modal-login').classList.add('on');
+  setTimeout(() => $('log-usuario').focus(), 200);
+}
+
+function sairDaConta() {
+  if (!confirm('Sair da conta neste aparelho? Você vai precisar da senha de novo para editar.')) return;
+  localStorage.removeItem(K_SESSAO);
+  usuarioAtual = null;
+  $('modal-ajustes').classList.remove('on');
+  if (editando) sairEdicao();
+  $('btn-lapis').classList.remove('on');
+  toast('Você saiu da conta');
+}
 
 const $ = id => document.getElementById(id);
 const brl = v => 'R$ ' + (Number(v) || 0).toFixed(2).replace('.', ',');
@@ -410,9 +498,15 @@ async function iniciar() {
   aplicarTextos();
   desenhar();
 
+  usuarioAtual = sessaoAtiva();
   const params = new URLSearchParams(location.search);
-  if (localStorage.getItem(K_CHAVE) || params.has('editar')) liberarLapis();
-  if (params.has('editar')) entrarEdicao();
+  if (usuarioAtual) {
+    liberarLapis();
+    if (params.has('editar')) entrarEdicao();
+  } else if (params.has('editar')) {
+    liberarLapis();
+    pedirLogin();
+  }
 }
 
 const clonar = o => JSON.parse(JSON.stringify(o));
@@ -698,6 +792,8 @@ function atualizarStatus() {
 function liberarLapis() { $('btn-lapis').classList.add('on'); }
 
 function entrarEdicao() {
+  if (!sessaoAtiva()) { pedirLogin(); return; }
+  usuarioAtual = sessaoAtiva();
   editando = true;
   document.body.classList.add('editando');
   $('card-cliente').style.display = 'none';
@@ -721,7 +817,21 @@ function sairEdicao() {
   window.scrollTo({ top: 0 });
 }
 
-$('btn-lapis').addEventListener('click', entrarEdicao);
+$('btn-lapis').addEventListener('click', () => {
+  if (sessaoAtiva()) { usuarioAtual = sessaoAtiva(); entrarEdicao(); }
+  else pedirLogin();
+});
+
+$('btn-entrar').addEventListener('click', tentarEntrar);
+$('log-senha').addEventListener('keydown', ev => { if (ev.key === 'Enter') tentarEntrar(); });
+$('log-usuario').addEventListener('keydown', ev => { if (ev.key === 'Enter') $('log-senha').focus(); });
+$('btn-cancelar-login').addEventListener('click', () => {
+  $('modal-login').classList.remove('on');
+  $('log-senha').value = '';
+});
+$('modal-login').addEventListener('click', ev => {
+  if (ev.target.id === 'modal-login') { $('modal-login').classList.remove('on'); $('log-senha').value = ''; }
+});
 $('btn-sair').addEventListener('click', () => {
   if (pendente && !confirm('Você tem mudanças que ainda não foram publicadas.\nSair mesmo assim? Elas ficam guardadas neste aparelho.')) return;
   sairEdicao();
@@ -771,6 +881,7 @@ $('cfg-zap').addEventListener('input', ev => {
 
 $('btn-ajustes').addEventListener('click', () => { preencherAjustes(); $('modal-ajustes').classList.add('on'); });
 $('fechar-ajustes').addEventListener('click', () => $('modal-ajustes').classList.remove('on'));
+$('btn-sair-conta').addEventListener('click', sairDaConta);
 $('modal-ajustes').addEventListener('click', ev => { if (ev.target.id === 'modal-ajustes') $('modal-ajustes').classList.remove('on'); });
 
 $('btn-salvar-chave').addEventListener('click', () => {
@@ -888,7 +999,8 @@ async function publicar() {
     else if (atual.status === 401) throw new Error('A chave não foi aceita. Gere uma nova em Ajustes.');
     else if (atual.status === 403) throw new Error('A chave não tem permissão de escrita (Contents = Read and write).');
 
-    const corpo = { message: 'Atualiza lista de produtos', content: paraBase64(conteudoJson()), branch: BRANCH };
+    const quem = (usuarioAtual && usuarioAtual.nome) || 'painel';
+    const corpo = { message: 'Atualiza lista de produtos (' + quem + ')', content: paraBase64(conteudoJson()), branch: BRANCH };
     if (sha) corpo.sha = sha;
 
     const env = await fetch(url, { method: 'PUT', headers: cab, body: JSON.stringify(corpo) });
