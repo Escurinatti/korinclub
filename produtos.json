@@ -1,0 +1,41 @@
+{
+  "titulo": "Clube de Compras Korin 2026",
+  "subtitulo": "Preencha as quantidades — o total é calculado automaticamente",
+  "frase": "Respeitando-se e amando-se o solo, sua capacidade natural se manifestará ao máximo. Para tanto, o mais importante é não sujá-lo, mas torná-lo ainda mais puro. Com isso, ele ficará alegre e, logicamente, se tornará mais ativo.",
+  "autor": "— Meishu-Sama, Alicerce do Paraíso, vol. 5",
+  "whatsapp": "5521982208226",
+  "grupos": [
+    {
+      "nome": "Tabela Ação Social",
+      "itens": [
+        { "n": "COXA NGMO 1KG", "p": 13.5 },
+        { "n": "COXINHA ASA NGMO 1KG", "p": 15.1 },
+        { "n": "SOBRECOXA NGMO 1KG", "p": 23.85 },
+        { "n": "FIGADO NGMO 1KG", "p": 8.6 },
+        { "n": "PÉ NGMO 1KG", "p": 8.5 },
+        { "n": "OVOS S/TRANSG CAIPIRA VERM GRANDE C/ 20 UN", "p": 25.45 }
+      ]
+    },
+    {
+      "nome": "Tabela Complementar",
+      "itens": [
+        { "n": "CARNE MOIDA DE FRANGO S/TRANSG 400G", "p": 19.92 },
+        { "n": "FILE PEITO NGMO 600G", "p": 34.06 },
+        { "n": "CORACAO DE FRANGO NGMO 600G", "p": 31.5 },
+        { "n": "HAMBURGUER FRANGO NGMO 360G", "p": 27.8 },
+        { "n": "ESPETINHO DE FILE DE COXA NGMO TEMP 400G", "p": 18.5 },
+        { "n": "MEL ORG. BISNAGA 300G", "p": 26.9 },
+        { "n": "EXTRATO PROPOLIS VERDE ORG 30ML", "p": 24.8 },
+        { "n": "SPRAY MEL E PROPOLIS ORG. HORTELA 30ML", "p": 16.3 },
+        { "n": "ARROZ AGULHINHA POLIDO ORG 1KG", "p": 23.53 },
+        { "n": "ARROZ AGULHINHA INTEGRAL ORG 1KG", "p": 22.49 },
+        { "n": "FEIJAO CARIOCA ORG 500G", "p": 16.12 },
+        { "n": "FEIJAO PRETO ORG 500G", "p": 14.43 },
+        { "n": "MOLHO DE TOMATE AGRICULTURA NATURAL MANJERICÃO KORIN 325G", "p": 23.9 },
+        { "n": "MOLHO DE TOMATE AGRICULTURA NATURAL TRADICIONAL KORIN 325G", "p": 23.9 },
+        { "n": "MILHO PIPOCA ORGÂNICO KORIN 500G", "p": 18.0 },
+        { "n": "FARINHA DE MILHO DE FUBÁ ORGÂNICO 500G", "p": 10.5 }
+      ]
+    }
+  ]
+}
