@@ -131,6 +131,10 @@
   .mini:active{background:var(--verde-claro);}
   .mini:disabled{opacity:.3;}
   .mini.perigo{color:var(--erro);border-color:#f0d5d1;}
+  /* botoes de reordenar: usam + e - iguais aos da quantidade, que ela ja conhece */
+  .mini.mover{border-color:var(--verde);color:var(--verde);font-size:23px;font-weight:700;line-height:1;}
+  .mini.mover:active{background:var(--verde);color:#fff;}
+  .mini.mover:disabled{border-color:var(--borda);color:var(--cinza);}
 
   .btn{
     width:100%;padding:14px 12px;font-size:15.5px;font-weight:700;
@@ -498,8 +502,8 @@ function tituloEditavel(g, gi) {
   inp.placeholder = 'Nome da tabela';
   inp.addEventListener('input', () => { g.nome = inp.value; marcar(); });
   cx.appendChild(inp);
-  cx.appendChild(mini('↑', 'Subir tabela', gi === 0, () => moverGrupo(gi, -1)));
-  cx.appendChild(mini('↓', 'Descer tabela', gi === CFG.grupos.length - 1, () => moverGrupo(gi, 1)));
+  cx.appendChild(mini('+', 'Subir tabela', gi === 0, () => moverGrupo(gi, -1)));
+  cx.appendChild(mini('−', 'Descer tabela', gi === CFG.grupos.length - 1, () => moverGrupo(gi, 1)));
   cx.appendChild(mini('🗑️', 'Excluir tabela', false, () => excluirGrupo(gi), true));
   return cx;
 }
@@ -613,8 +617,8 @@ function cartaoEdicao(g, it, ii) {
   pw.appendChild(rs); pw.appendChild(preco);
   baixo.appendChild(pw);
 
-  baixo.appendChild(mini('↑', 'Subir', ii === 0, () => moverItem(g, ii, -1)));
-  baixo.appendChild(mini('↓', 'Descer', ii === g.itens.length - 1, () => moverItem(g, ii, 1)));
+  baixo.appendChild(mini('+', 'Subir', ii === 0, () => moverItem(g, ii, -1)));
+  baixo.appendChild(mini('−', 'Descer', ii === g.itens.length - 1, () => moverItem(g, ii, 1)));
   baixo.appendChild(mini('🗑️', 'Excluir', false, () => excluirItem(g, ii), true));
 
   div.appendChild(baixo);
@@ -624,7 +628,7 @@ function cartaoEdicao(g, it, ii) {
 function mini(txt, titulo, desativado, acao, perigo) {
   const b = document.createElement('button');
   b.type = 'button';
-  b.className = 'mini' + (perigo ? ' perigo' : '');
+  b.className = 'mini' + (perigo ? ' perigo' : '') + ((txt === '+' || txt === '−') ? ' mover' : '');
   b.textContent = txt;
   b.title = titulo;
   b.setAttribute('aria-label', titulo);
