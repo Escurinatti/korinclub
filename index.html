@@ -19,6 +19,9 @@
     --fundo:#f6f9f5;
     --branco:#ffffff;
     --erro:#c0392b;
+    --edit:#8a5a00;
+    --edit-fundo:#fff8e6;
+    --edit-borda:#e8d9b0;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   body{
@@ -26,113 +29,124 @@
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
     background:var(--fundo);
     color:var(--texto);
-    padding-bottom:160px;
+    padding-bottom:170px;
     font-size:16px;
   }
+  body.editando{background:#fffdf7;}
+
   header{
     background:linear-gradient(160deg,var(--verde) 0%,var(--verde-escuro) 100%);
-    color:#fff;
-    padding:26px 20px 22px;
-    text-align:center;
+    color:#fff;padding:26px 20px 22px;text-align:center;position:relative;
   }
   header h1{margin:0 0 6px;font-size:22px;line-height:1.25;}
   header p.sub{margin:0;font-size:14px;opacity:.92;}
+  #btn-lapis{
+    position:absolute;top:14px;right:14px;
+    width:42px;height:42px;border-radius:50%;
+    background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.45);
+    color:#fff;font-size:19px;cursor:pointer;display:none;
+    align-items:center;justify-content:center;padding:0;font-family:inherit;
+  }
+  #btn-lapis.on{display:flex;}
+
   .frase{
-    background:var(--verde-claro);
-    border-left:4px solid var(--verde);
-    margin:0;
-    padding:16px 20px;
-    font-size:13.5px;
-    line-height:1.55;
-    color:#33513a;
-    font-style:italic;
+    background:var(--verde-claro);border-left:4px solid var(--verde);
+    margin:0;padding:16px 20px;font-size:13.5px;line-height:1.55;
+    color:#33513a;font-style:italic;
   }
-  .frase span{display:block;margin-top:8px;font-style:normal;font-weight:600;font-size:12.5px;}
+  .frase span.autor{display:block;margin-top:8px;font-style:normal;font-weight:600;font-size:12.5px;}
   main{max-width:640px;margin:0 auto;padding:16px 12px 0;}
+
   .card{
-    background:var(--branco);
-    border:1px solid var(--borda);
-    border-radius:14px;
-    padding:16px;
-    margin-bottom:16px;
+    background:var(--branco);border:1px solid var(--borda);
+    border-radius:14px;padding:16px;margin-bottom:16px;
   }
-  .card h2{
-    margin:0 0 14px;
-    font-size:16px;
-    color:var(--verde-escuro);
-  }
+  .card h2{margin:0 0 14px;font-size:16px;color:var(--verde-escuro);}
   label{display:block;font-size:14px;font-weight:600;margin-bottom:6px;}
-  input[type=text]{
-    width:100%;
-    padding:13px 12px;
-    font-size:16px;
-    border:1.5px solid var(--borda);
-    border-radius:10px;
-    background:#fff;
-    font-family:inherit;
-    color:var(--texto);
+  input[type=text],textarea{
+    width:100%;padding:13px 12px;font-size:16px;
+    border:1.5px solid var(--borda);border-radius:10px;
+    background:#fff;font-family:inherit;color:var(--texto);
   }
-  input[type=text]:focus{outline:none;border-color:var(--verde);}
+  textarea{min-height:88px;resize:vertical;line-height:1.5;}
+  input:focus,textarea:focus{outline:none;border-color:var(--verde);}
   input.invalido{border-color:var(--erro);background:#fdf3f2;}
   .campo{margin-bottom:14px;}
   .campo:last-child{margin-bottom:0;}
+  .ajuda{font-size:12.5px;color:var(--cinza);margin-top:5px;line-height:1.45;}
   .aviso{color:var(--erro);font-size:13px;margin-top:6px;display:none;}
   .aviso.on{display:block;}
+
   h3.grupo{
-    margin:22px 4px 10px;
-    font-size:15px;
-    color:var(--verde-escuro);
-    text-transform:uppercase;
-    letter-spacing:.5px;
+    margin:22px 4px 10px;font-size:15px;color:var(--verde-escuro);
+    text-transform:uppercase;letter-spacing:.5px;
   }
+  .grupo-edit{display:flex;align-items:center;gap:8px;margin:22px 0 10px;}
+  .grupo-edit input{
+    flex:1;font-weight:800;font-size:15px;padding:11px;
+    text-transform:uppercase;border-color:var(--edit-borda);background:#fff;
+  }
+
   .item{
-    background:var(--branco);
-    border:1px solid var(--borda);
-    border-radius:14px;
-    padding:14px;
-    margin-bottom:10px;
+    background:var(--branco);border:1px solid var(--borda);
+    border-radius:14px;padding:14px;margin-bottom:10px;
     transition:border-color .15s,background .15s;
   }
   .item.ativo{border-color:var(--verde);background:#fbfefb;}
+  .item.edit{border-color:var(--edit-borda);background:#fffdf5;}
   .nome{font-size:14.5px;font-weight:600;line-height:1.35;margin-bottom:2px;}
   .preco{font-size:13px;color:var(--cinza);}
   .linha{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;}
   .contador{display:flex;align-items:center;gap:6px;}
   .btn-qtd{
-    width:44px;height:44px;
-    border:1.5px solid var(--verde);
-    background:#fff;
-    color:var(--verde);
-    font-size:24px;
-    font-weight:700;
-    border-radius:12px;
-    line-height:1;
-    cursor:pointer;
-    display:flex;align-items:center;justify-content:center;
-    padding:0;
-    font-family:inherit;
+    width:44px;height:44px;border:1.5px solid var(--verde);
+    background:#fff;color:var(--verde);font-size:24px;font-weight:700;
+    border-radius:12px;line-height:1;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;padding:0;font-family:inherit;
   }
   .btn-qtd:active{background:var(--verde);color:#fff;}
   .btn-qtd:disabled{opacity:.35;border-color:var(--borda);color:var(--cinza);}
   .qtd{
-    width:54px;height:44px;
-    text-align:center;
-    font-size:18px;
-    font-weight:700;
-    border:1.5px solid var(--borda);
-    border-radius:10px;
-    font-family:inherit;
-    color:var(--texto);
-    background:#fff;
+    width:54px;height:44px;text-align:center;font-size:18px;font-weight:700;
+    border:1.5px solid var(--borda);border-radius:10px;
+    font-family:inherit;color:var(--texto);background:#fff;
   }
   .subtotal{font-size:15px;font-weight:700;color:var(--verde-escuro);min-width:88px;text-align:right;}
+
+  .nome-in{margin-bottom:8px;font-weight:600;}
+  .item-baixo{display:flex;align-items:center;gap:8px;}
+  .preco-wrap{
+    display:flex;align-items:center;gap:6px;flex:1;
+    border:1.5px solid var(--borda);border-radius:10px;background:#fff;padding:0 10px;
+  }
+  .preco-wrap span{font-size:15px;color:var(--cinza);font-weight:700;}
+  .preco-wrap input{border:none;padding:12px 0;flex:1;min-width:0;font-weight:700;}
+  .preco-wrap:focus-within{border-color:var(--verde);}
+  .mini{
+    width:42px;height:44px;border-radius:10px;border:1.5px solid var(--borda);
+    background:#fff;font-size:17px;cursor:pointer;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    font-family:inherit;color:var(--cinza);padding:0;
+  }
+  .mini:active{background:var(--verde-claro);}
+  .mini:disabled{opacity:.3;}
+  .mini.perigo{color:var(--erro);border-color:#f0d5d1;}
+
+  .btn{
+    width:100%;padding:14px 12px;font-size:15.5px;font-weight:700;
+    border-radius:12px;border:none;cursor:pointer;font-family:inherit;margin-bottom:8px;
+  }
+  .btn:last-child{margin-bottom:0;}
+  .btn-add{background:var(--edit-fundo);color:var(--edit);border:1.5px dashed #d4b978;}
+  .btn-principal{background:var(--verde);color:#fff;}
+  .btn-secundario{background:#fff;color:var(--verde-escuro);border:1.5px solid var(--borda);}
+  .btn-perigo{background:#fff;color:var(--erro);border:1.5px solid #f0d5d1;}
+  .btn:disabled{opacity:.55;cursor:default;}
+
   .rodape{
-    position:fixed;left:0;right:0;bottom:0;
-    background:var(--branco);
-    border-top:1px solid var(--borda);
-    box-shadow:0 -4px 18px rgba(0,0,0,.09);
-    padding:12px 14px calc(12px + env(safe-area-inset-bottom));
-    z-index:20;
+    position:fixed;left:0;right:0;bottom:0;background:var(--branco);
+    border-top:1px solid var(--borda);box-shadow:0 -4px 18px rgba(0,0,0,.09);
+    padding:12px 14px calc(12px + env(safe-area-inset-bottom));z-index:20;
   }
   .rodape-in{max-width:640px;margin:0 auto;}
   .total-linha{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;}
@@ -140,74 +154,102 @@
   .total-linha .val{font-size:26px;font-weight:800;color:var(--verde-escuro);}
   .itens-cont{font-size:12.5px;color:var(--cinza);}
   .botoes{display:flex;gap:8px;}
-  .btn{
-    flex:1;
-    padding:15px 10px;
-    font-size:16px;
-    font-weight:700;
-    border-radius:12px;
-    border:none;
-    cursor:pointer;
-    font-family:inherit;
-  }
+  .botoes .btn{margin-bottom:0;}
   .btn-zap{background:var(--zap);color:#fff;flex:2;}
   .btn-zap:disabled{background:#c3d4c5;color:#fff;}
-  .btn-limpar{background:#fff;color:var(--cinza);border:1.5px solid var(--borda);}
-  .modal{
-    position:fixed;inset:0;
-    background:rgba(15,30,15,.55);
-    display:none;
-    align-items:flex-end;
-    z-index:50;
+  .btn-limpar{background:#fff;color:var(--cinza);border:1.5px solid var(--borda);flex:1;}
+
+  #barra-edicao{display:none;}
+  body.editando #barra-pedido{display:none;}
+  body.editando #barra-edicao{display:block;}
+  .status{font-size:13px;font-weight:700;text-align:center;margin-bottom:8px;color:var(--cinza);}
+  .status.pendente{color:var(--edit);}
+  .status.ok{color:var(--verde);}
+
+  .faixa-edicao{
+    display:none;position:sticky;top:0;z-index:25;
+    background:var(--edit-fundo);border-bottom:1.5px solid var(--edit-borda);
+    padding:10px 14px;align-items:center;gap:10px;
   }
+  body.editando .faixa-edicao{display:flex;}
+  .faixa-edicao .txt{flex:1;font-size:13.5px;font-weight:800;color:var(--edit);}
+  .faixa-edicao button{
+    background:#fff;border:1.5px solid var(--edit-borda);color:var(--edit);
+    border-radius:10px;padding:9px 12px;font-size:14px;font-weight:700;
+    cursor:pointer;font-family:inherit;
+  }
+
+  .banner{
+    display:none;background:var(--edit-fundo);border:1px solid var(--edit-borda);
+    border-radius:12px;padding:12px 14px;margin-bottom:16px;
+    font-size:13.5px;line-height:1.5;color:var(--edit);
+  }
+  .banner.on{display:block;}
+
+  .modal{position:fixed;inset:0;background:rgba(15,30,15,.55);display:none;align-items:flex-end;z-index:60;}
   .modal.on{display:flex;}
   .modal-cx{
-    background:#fff;
-    width:100%;
-    max-width:640px;
-    margin:0 auto;
-    border-radius:18px 18px 0 0;
-    padding:20px 18px calc(20px + env(safe-area-inset-bottom));
-    max-height:88vh;
-    overflow-y:auto;
+    background:#fff;width:100%;max-width:640px;margin:0 auto;
+    border-radius:18px 18px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom));
+    max-height:90vh;overflow-y:auto;
   }
   .modal-cx h2{margin:0 0 4px;font-size:18px;color:var(--verde-escuro);}
   .modal-cx p.dica{margin:0 0 14px;font-size:13.5px;color:var(--cinza);line-height:1.5;}
   pre.resumo{
-    background:var(--verde-claro);
-    border-radius:12px;
-    padding:14px;
-    font-size:13px;
-    line-height:1.55;
-    white-space:pre-wrap;
-    word-wrap:break-word;
-    font-family:inherit;
-    margin:0 0 14px;
-    max-height:36vh;
-    overflow-y:auto;
+    background:var(--verde-claro);border-radius:12px;padding:14px;
+    font-size:13px;line-height:1.55;white-space:pre-wrap;word-wrap:break-word;
+    font-family:inherit;margin:0 0 14px;max-height:36vh;overflow-y:auto;
   }
   .modal .botoes{flex-direction:column;}
-  .modal .btn{width:100%;}
+  .modal .botoes .btn{width:100%;margin-bottom:8px;}
   .btn-copiar{background:var(--verde);color:#fff;}
-  .btn-voltar{background:#fff;color:var(--cinza);border:1.5px solid var(--borda);}
+
+  details{border:1px solid var(--borda);border-radius:12px;padding:12px;background:#fbfcfb;margin-top:14px;}
+  summary{font-weight:700;font-size:14px;color:var(--verde-escuro);cursor:pointer;}
+  details ol{padding-left:20px;font-size:13.5px;line-height:1.75;}
+  details code{background:var(--verde-claro);padding:1px 5px;border-radius:4px;font-size:12.5px;word-break:break-all;}
+  .msg{margin-top:12px;padding:12px;border-radius:10px;font-size:13.5px;line-height:1.5;display:none;}
+  .msg.on{display:block;}
+  .msg.sucesso{background:var(--verde-claro);color:var(--verde-escuro);}
+  .msg.falha{background:#fdf3f2;color:var(--erro);}
+
   .rodape-txt{text-align:center;font-size:12px;color:var(--cinza);padding:6px 20px 26px;}
   .carregando{text-align:center;padding:40px 20px;color:var(--cinza);font-size:14px;}
+  .toast{
+    position:fixed;left:50%;transform:translateX(-50%);bottom:150px;
+    background:var(--verde-escuro);color:#fff;padding:12px 18px;border-radius:24px;
+    font-size:14px;font-weight:600;z-index:80;opacity:0;transition:opacity .25s;
+    pointer-events:none;max-width:88%;text-align:center;
+  }
+  .toast.on{opacity:1;}
 </style>
 </head>
 <body>
 
+<div class="faixa-edicao">
+  <div class="txt">✏️ Modo de edição</div>
+  <button type="button" id="btn-ajustes">⚙️ Ajustes</button>
+  <button type="button" id="btn-sair">Sair</button>
+</div>
+
 <header>
+  <button type="button" id="btn-lapis" aria-label="Editar a lista">✏️</button>
   <h1 id="h-titulo">🌱 Clube de Compras Korin 2026</h1>
   <p class="sub" id="h-sub">Preencha as quantidades — o total é calculado automaticamente</p>
 </header>
 
-<p class="frase">
+<p class="frase" id="bloco-frase">
   <span id="h-frase"></span>
-  <span id="h-autor"></span>
+  <span class="autor" id="h-autor"></span>
 </p>
 
 <main>
-  <div class="card">
+  <div class="banner" id="banner-rascunho">
+    Você tem <strong>mudanças na lista que ainda não foram publicadas</strong>.
+    Só você está vendo elas. Toque no ✏️ lá em cima e depois em <strong>Publicar</strong>.
+  </div>
+
+  <div class="card" id="card-cliente">
     <h2>👤 Informações do Cliente</h2>
     <div class="campo">
       <label for="nome">Nome *</label>
@@ -221,27 +263,44 @@
   </div>
 
   <div id="lista"><div class="carregando">Carregando produtos…</div></div>
+
+  <div id="area-edicao" style="display:none;">
+    <button class="btn btn-add" id="add-grupo" type="button" style="margin-top:16px;">➕ Criar nova tabela</button>
+    <button class="btn btn-perigo" id="btn-descartar" type="button" style="margin-top:20px;">↺ Descartar minhas mudanças</button>
+  </div>
 </main>
 
-<p class="rodape-txt">Ao finalizar, seu pedido é enviado pelo WhatsApp. 💚</p>
+<p class="rodape-txt" id="rodape-txt">Ao finalizar, seu pedido é enviado pelo WhatsApp. 💚</p>
 
 <div class="rodape">
   <div class="rodape-in">
-    <div class="total-linha">
-      <div>
-        <div class="rot">Total Geral</div>
-        <div class="itens-cont" id="contador">Nenhum item selecionado</div>
+
+    <div id="barra-pedido">
+      <div class="total-linha">
+        <div>
+          <div class="rot">Total Geral</div>
+          <div class="itens-cont" id="contador">Nenhum item selecionado</div>
+        </div>
+        <div class="val" id="total">R$ 0,00</div>
       </div>
-      <div class="val" id="total">R$ 0,00</div>
+      <div class="botoes">
+        <button class="btn btn-limpar" id="btn-limpar" type="button">Limpar</button>
+        <button class="btn btn-zap" id="btn-finalizar" type="button" disabled>📲 Enviar pedido</button>
+      </div>
     </div>
-    <div class="botoes">
-      <button class="btn btn-limpar" id="btn-limpar" type="button">Limpar</button>
-      <button class="btn btn-zap" id="btn-finalizar" type="button" disabled>📲 Enviar pedido</button>
+
+    <div id="barra-edicao">
+      <div class="status" id="status">✓ Tudo publicado</div>
+      <div class="botoes">
+        <button class="btn btn-secundario" id="btn-ver" type="button">👁️ Ver como fica</button>
+        <button class="btn btn-principal" id="btn-publicar" type="button">🚀 Publicar</button>
+      </div>
     </div>
+
   </div>
 </div>
 
-<div class="modal" id="modal">
+<div class="modal" id="modal-pedido">
   <div class="modal-cx">
     <h2>Confira seu pedido</h2>
     <p class="dica">Se o WhatsApp não abrir sozinho, toque em <strong>Copiar pedido</strong> e cole na conversa.</p>
@@ -249,121 +308,619 @@
     <div class="botoes">
       <button class="btn btn-zap" id="btn-zap" type="button">📲 Abrir WhatsApp</button>
       <button class="btn btn-copiar" id="btn-copiar" type="button">Copiar pedido</button>
-      <button class="btn btn-voltar" id="btn-voltar" type="button">Voltar e editar</button>
+      <button class="btn btn-secundario" id="btn-voltar" type="button">Voltar e editar</button>
     </div>
   </div>
 </div>
 
+<div class="modal" id="modal-ajustes">
+  <div class="modal-cx">
+    <h2>⚙️ Ajustes</h2>
+    <p class="dica">Normalmente não precisa mexer aqui.</p>
+
+    <div class="campo">
+      <label for="cfg-titulo">Título da página</label>
+      <input type="text" id="cfg-titulo">
+    </div>
+    <div class="campo">
+      <label for="cfg-sub">Frase abaixo do título</label>
+      <input type="text" id="cfg-sub">
+    </div>
+    <div class="campo">
+      <label for="cfg-frase">Ensinamento</label>
+      <textarea id="cfg-frase"></textarea>
+      <div class="ajuda">Não precisa colocar aspas — elas aparecem sozinhas.</div>
+    </div>
+    <div class="campo">
+      <label for="cfg-autor">Autor do ensinamento</label>
+      <input type="text" id="cfg-autor">
+    </div>
+    <div class="campo">
+      <label for="cfg-zap">WhatsApp que recebe os pedidos</label>
+      <input type="text" id="cfg-zap" inputmode="numeric">
+      <div class="ajuda">Só números: 55 + DDD + número. Exemplo: 5521982208226</div>
+    </div>
+
+    <details id="det-chave">
+      <summary>🔑 Chave de acesso (configurar uma vez só)</summary>
+      <p class="ajuda">Sem ela o botão Publicar não funciona. A chave fica guardada só neste aparelho.</p>
+      <ol>
+        <li>Abra <code>github.com/settings/personal-access-tokens/new</code></li>
+        <li><em>Token name</em>: <code>korin</code></li>
+        <li><em>Expiration</em>: <code>No expiration</code></li>
+        <li><em>Repository access</em>: <em>Only select repositories</em> → <code>korinclub</code></li>
+        <li><em>Permissions → Repository permissions → Contents</em>: <strong>Read and write</strong></li>
+        <li><em>Generate token</em>, copie e cole abaixo</li>
+      </ol>
+      <div class="campo">
+        <label for="chave">Chave</label>
+        <input type="text" id="chave" placeholder="github_pat_..." autocomplete="off" spellcheck="false">
+      </div>
+      <button class="btn btn-principal" id="btn-salvar-chave" type="button">Guardar chave</button>
+      <button class="btn btn-perigo" id="btn-apagar-chave" type="button">Apagar chave deste aparelho</button>
+      <button class="btn btn-secundario" id="btn-baixar" type="button">💾 Baixar arquivo (jeito manual)</button>
+      <div class="msg" id="msg-chave"></div>
+    </details>
+
+    <button class="btn btn-principal" id="fechar-ajustes" type="button" style="margin-top:16px;">Pronto</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-/* Os produtos, precos e o numero do WhatsApp ficam no arquivo produtos.json.
-   Para mudar qualquer coisa, use a pagina admin.html — nao precisa mexer aqui. */
+const REPO = 'Escurinatti/korinclub';
+const ARQUIVO = 'produtos.json';
+const BRANCH = 'main';
+const K_RASCUNHO = 'korin-rascunho-lista';
+const K_CHAVE = 'korin-chave';
+const K_PEDIDO = 'korin-pedido';
 
-const PADRAO = {
-  titulo: 'Clube de Compras Korin 2026',
-  subtitulo: 'Preencha as quantidades — o total é calculado automaticamente',
-  frase: '',
-  autor: '',
-  whatsapp: '5521982208226',
-  grupos: []
-};
-
-let CFG = PADRAO;
-const estado = [];
-
-const brl = v => 'R$ ' + v.toFixed(2).replace('.', ',');
 const $ = id => document.getElementById(id);
+const brl = v => 'R$ ' + (Number(v) || 0).toFixed(2).replace('.', ',');
 
-async function carregarProdutos() {
+const PADRAO = { titulo: 'Clube de Compras Korin', subtitulo: '', frase: '', autor: '', whatsapp: '', grupos: [] };
+
+let CFG = null;         // lista mostrada agora (publicada ou rascunho)
+let publicado = null;   // o que esta no ar
+let qtds = {};          // nome do produto -> quantidade
+let editando = false;
+let pendente = false;   // ha mudancas nao publicadas
+
+/* ================= carregar ================= */
+
+async function iniciar() {
   try {
-    const r = await fetch('produtos.json?v=' + Date.now(), { cache: 'no-store' });
-    if (r.ok) {
-      const j = await r.json();
-      if (j && Array.isArray(j.grupos) && j.grupos.length) CFG = Object.assign({}, PADRAO, j);
-    }
+    const r = await fetch(ARQUIVO + '?v=' + Date.now(), { cache: 'no-store' });
+    if (r.ok) publicado = await r.json();
   } catch (err) {}
 
-  document.title = CFG.titulo;
-  $('h-titulo').textContent = '🌱 ' + CFG.titulo;
+  const rasc = localStorage.getItem(K_RASCUNHO);
+  if (rasc) {
+    try { CFG = JSON.parse(rasc); pendente = true; } catch (err) {}
+  }
+  if (!CFG) CFG = publicado ? clonar(publicado) : clonar(PADRAO);
+  normalizar(CFG);
+
+  carregarPedido();
+  aplicarTextos();
+  desenhar();
+
+  const params = new URLSearchParams(location.search);
+  if (localStorage.getItem(K_CHAVE) || params.has('editar')) liberarLapis();
+  if (params.has('editar')) entrarEdicao();
+}
+
+const clonar = o => JSON.parse(JSON.stringify(o));
+
+function normalizar(d) {
+  ['titulo','subtitulo','frase','autor'].forEach(k => { d[k] = d[k] || ''; });
+  d.whatsapp = String(d.whatsapp || '');
+  if (!Array.isArray(d.grupos)) d.grupos = [];
+  d.grupos.forEach(g => {
+    g.nome = g.nome || '';
+    if (!Array.isArray(g.itens)) g.itens = [];
+    g.itens.forEach(it => { it.n = it.n || ''; it.p = Number(it.p) || 0; });
+  });
+}
+
+function aplicarTextos() {
+  document.title = CFG.titulo || 'Clube de Compras Korin';
+  $('h-titulo').textContent = '🌱 ' + (CFG.titulo || 'Clube de Compras Korin');
   $('h-sub').textContent = CFG.subtitulo || '';
   $('h-frase').textContent = CFG.frase ? '"' + CFG.frase + '"' : '';
   $('h-autor').textContent = CFG.autor || '';
-  if (!CFG.frase && !CFG.autor) document.querySelector('.frase').style.display = 'none';
-
-  montarLista();
-  carregarRascunho();
+  $('bloco-frase').style.display = (CFG.frase || CFG.autor) ? '' : 'none';
+  $('banner-rascunho').classList.toggle('on', pendente && !editando);
 }
 
-function montarLista() {
+/* ================= desenhar a lista ================= */
+
+function desenhar() {
   const lista = $('lista');
   lista.innerHTML = '';
-  let idx = 0;
 
-  CFG.grupos.forEach(g => {
-    if (!g.itens || !g.itens.length) return;
-    const h = document.createElement('h3');
-    h.className = 'grupo';
-    h.textContent = g.nome;
-    lista.appendChild(h);
+  if (!CFG.grupos.length) {
+    lista.innerHTML = '<div class="carregando">' +
+      (editando ? 'Nenhuma tabela ainda. Toque em “Criar nova tabela”.' : 'Nenhum produto cadastrado no momento.') +
+      '</div>';
+    atualizarTotal();
+    return;
+  }
 
-    g.itens.forEach(it => {
-      const i = idx++;
-      const preco = Number(it.p) || 0;
-      estado.push({ nome: it.n, preco: preco, qtd: 0 });
+  CFG.grupos.forEach((g, gi) => {
+    if (!editando && !g.itens.length) return;
+    lista.appendChild(editando ? tituloEditavel(g, gi) : tituloSimples(g));
 
-      const div = document.createElement('div');
-      div.className = 'item';
-      div.id = 'item-' + i;
-      div.innerHTML =
-        '<div class="nome"></div>' +
-        '<div class="preco"></div>' +
-        '<div class="linha">' +
-          '<div class="contador">' +
-            '<button class="btn-qtd" type="button" data-acao="menos" data-i="' + i + '" disabled>&minus;</button>' +
-            '<input class="qtd" type="text" inputmode="numeric" value="0" data-i="' + i + '" aria-label="Quantidade">' +
-            '<button class="btn-qtd" type="button" data-acao="mais" data-i="' + i + '">+</button>' +
-          '</div>' +
-          '<div class="subtotal" id="sub-' + i + '">R$ 0,00</div>' +
-        '</div>';
-      div.querySelector('.nome').textContent = it.n;
-      div.querySelector('.preco').textContent = brl(preco);
-      lista.appendChild(div);
+    g.itens.forEach((it, ii) => {
+      lista.appendChild(editando ? cartaoEdicao(g, it, ii) : cartaoPedido(it));
     });
+
+    if (editando) {
+      const add = document.createElement('button');
+      add.type = 'button';
+      add.className = 'btn btn-add';
+      add.textContent = '➕ Adicionar produto nesta tabela';
+      add.addEventListener('click', () => {
+        g.itens.push({ n: '', p: 0 });
+        marcar();
+        desenhar();
+        const campos = lista.querySelectorAll('.nome-in');
+        const alvo = campos[posicaoGlobal(gi, g.itens.length - 1)] || campos[campos.length - 1];
+        if (alvo) { alvo.focus(); alvo.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+      });
+      lista.appendChild(add);
+    }
   });
 
-  if (!estado.length) {
-    lista.innerHTML = '<div class="carregando">Nenhum produto cadastrado no momento.</div>';
+  atualizarTotal();
+}
+
+function posicaoGlobal(gi, ii) {
+  let n = 0;
+  for (let i = 0; i < gi; i++) n += CFG.grupos[i].itens.length;
+  return n + ii;
+}
+
+function tituloSimples(g) {
+  const h = document.createElement('h3');
+  h.className = 'grupo';
+  h.textContent = g.nome;
+  return h;
+}
+
+function tituloEditavel(g, gi) {
+  const cx = document.createElement('div');
+  cx.className = 'grupo-edit';
+  const inp = document.createElement('input');
+  inp.type = 'text';
+  inp.value = g.nome;
+  inp.placeholder = 'Nome da tabela';
+  inp.addEventListener('input', () => { g.nome = inp.value; marcar(); });
+  cx.appendChild(inp);
+  cx.appendChild(mini('↑', 'Subir tabela', gi === 0, () => moverGrupo(gi, -1)));
+  cx.appendChild(mini('↓', 'Descer tabela', gi === CFG.grupos.length - 1, () => moverGrupo(gi, 1)));
+  cx.appendChild(mini('🗑️', 'Excluir tabela', false, () => excluirGrupo(gi), true));
+  return cx;
+}
+
+function cartaoPedido(it) {
+  const q = qtds[it.n] || 0;
+  const div = document.createElement('div');
+  div.className = 'item' + (q > 0 ? ' ativo' : '');
+
+  const nome = document.createElement('div');
+  nome.className = 'nome';
+  nome.textContent = it.n;
+
+  const preco = document.createElement('div');
+  preco.className = 'preco';
+  preco.textContent = brl(it.p);
+
+  const linha = document.createElement('div');
+  linha.className = 'linha';
+
+  const cont = document.createElement('div');
+  cont.className = 'contador';
+
+  const menos = document.createElement('button');
+  menos.type = 'button';
+  menos.className = 'btn-qtd';
+  menos.innerHTML = '&minus;';
+  menos.disabled = q === 0;
+
+  const campo = document.createElement('input');
+  campo.className = 'qtd';
+  campo.type = 'text';
+  campo.inputMode = 'numeric';
+  campo.value = q;
+  campo.setAttribute('aria-label', 'Quantidade de ' + it.n);
+
+  const mais = document.createElement('button');
+  mais.type = 'button';
+  mais.className = 'btn-qtd';
+  mais.textContent = '+';
+
+  const sub = document.createElement('div');
+  sub.className = 'subtotal';
+  sub.textContent = brl(q * it.p);
+
+  function repintar() {
+    const n = qtds[it.n] || 0;
+    campo.value = n;
+    menos.disabled = n === 0;
+    sub.textContent = brl(n * it.p);
+    div.classList.toggle('ativo', n > 0);
+    atualizarTotal();
+    salvarPedido();
+  }
+
+  menos.addEventListener('click', () => { qtds[it.n] = Math.max(0, (qtds[it.n] || 0) - 1); repintar(); });
+  mais.addEventListener('click', () => { qtds[it.n] = Math.min(999, (qtds[it.n] || 0) + 1); repintar(); });
+  campo.addEventListener('input', () => {
+    let n = parseInt(campo.value.replace(/\D/g, ''), 10);
+    if (isNaN(n)) n = 0;
+    qtds[it.n] = Math.max(0, Math.min(999, n));
+    const pos = campo.selectionStart;
+    repintar();
+    try { campo.setSelectionRange(pos, pos); } catch (e) {}
+  });
+  campo.addEventListener('focus', () => campo.select());
+
+  cont.appendChild(menos); cont.appendChild(campo); cont.appendChild(mais);
+  linha.appendChild(cont); linha.appendChild(sub);
+  div.appendChild(nome); div.appendChild(preco); div.appendChild(linha);
+  return div;
+}
+
+function cartaoEdicao(g, it, ii) {
+  const div = document.createElement('div');
+  div.className = 'item edit';
+
+  const nome = document.createElement('input');
+  nome.type = 'text';
+  nome.className = 'nome-in';
+  nome.value = it.n;
+  nome.placeholder = 'Nome do produto';
+  nome.addEventListener('input', () => {
+    const antigo = it.n;
+    it.n = nome.value;
+    if (qtds[antigo] !== undefined) { qtds[it.n] = qtds[antigo]; delete qtds[antigo]; }
+    marcar();
+  });
+  div.appendChild(nome);
+
+  const baixo = document.createElement('div');
+  baixo.className = 'item-baixo';
+
+  const pw = document.createElement('div');
+  pw.className = 'preco-wrap';
+  const rs = document.createElement('span');
+  rs.textContent = 'R$';
+  const preco = document.createElement('input');
+  preco.type = 'text';
+  preco.inputMode = 'decimal';
+  preco.value = it.p ? it.p.toFixed(2).replace('.', ',') : '';
+  preco.placeholder = '0,00';
+  preco.addEventListener('input', () => {
+    const limpo = preco.value.replace(/[^\d,.]/g, '').replace('.', ',');
+    if (limpo !== preco.value) preco.value = limpo;
+    it.p = Number(limpo.replace(',', '.')) || 0;
+    marcar();
+  });
+  preco.addEventListener('blur', () => { preco.value = it.p ? it.p.toFixed(2).replace('.', ',') : ''; });
+  preco.addEventListener('focus', () => preco.select());
+  pw.appendChild(rs); pw.appendChild(preco);
+  baixo.appendChild(pw);
+
+  baixo.appendChild(mini('↑', 'Subir', ii === 0, () => moverItem(g, ii, -1)));
+  baixo.appendChild(mini('↓', 'Descer', ii === g.itens.length - 1, () => moverItem(g, ii, 1)));
+  baixo.appendChild(mini('🗑️', 'Excluir', false, () => excluirItem(g, ii), true));
+
+  div.appendChild(baixo);
+  return div;
+}
+
+function mini(txt, titulo, desativado, acao, perigo) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'mini' + (perigo ? ' perigo' : '');
+  b.textContent = txt;
+  b.title = titulo;
+  b.setAttribute('aria-label', titulo);
+  b.disabled = !!desativado;
+  b.addEventListener('click', acao);
+  return b;
+}
+
+/* ================= mexer na lista ================= */
+
+function moverItem(g, i, d) {
+  const alvo = i + d;
+  if (alvo < 0 || alvo >= g.itens.length) return;
+  const t = g.itens[i]; g.itens[i] = g.itens[alvo]; g.itens[alvo] = t;
+  marcar(); desenhar();
+}
+function excluirItem(g, i) {
+  if (!confirm('Tirar "' + (g.itens[i].n || 'este produto') + '" da lista?')) return;
+  delete qtds[g.itens[i].n];
+  g.itens.splice(i, 1);
+  marcar(); desenhar();
+}
+function moverGrupo(gi, d) {
+  const alvo = gi + d;
+  if (alvo < 0 || alvo >= CFG.grupos.length) return;
+  const t = CFG.grupos[gi]; CFG.grupos[gi] = CFG.grupos[alvo]; CFG.grupos[alvo] = t;
+  marcar(); desenhar();
+}
+function excluirGrupo(gi) {
+  const g = CFG.grupos[gi];
+  const txt = g.itens.length
+    ? 'Excluir a tabela "' + (g.nome || 'sem nome') + '" e os ' + g.itens.length + ' produtos dela?'
+    : 'Excluir a tabela "' + (g.nome || 'sem nome') + '"?';
+  if (!confirm(txt)) return;
+  g.itens.forEach(it => delete qtds[it.n]);
+  CFG.grupos.splice(gi, 1);
+  marcar(); desenhar();
+}
+
+$('add-grupo').addEventListener('click', () => {
+  const nome = prompt('Nome da nova tabela:', '');
+  if (nome === null) return;
+  CFG.grupos.push({ nome: nome.trim() || 'Nova tabela', itens: [] });
+  marcar(); desenhar();
+});
+
+function marcar() {
+  pendente = true;
+  try { localStorage.setItem(K_RASCUNHO, JSON.stringify(CFG)); } catch (err) {}
+  atualizarStatus();
+}
+
+function atualizarStatus() {
+  const s = $('status');
+  const n = CFG.grupos.reduce((a, g) => a + g.itens.length, 0);
+  if (pendente) {
+    s.className = 'status pendente';
+    s.textContent = '● Não publicado ainda — ' + n + ' produtos';
+  } else {
+    s.className = 'status ok';
+    s.textContent = '✓ Tudo publicado — ' + n + ' produtos';
   }
 }
 
-function mudar(i, delta) {
-  estado[i].qtd = Math.max(0, Math.min(999, estado[i].qtd + delta));
-  atualizarItem(i);
-  atualizarTotal();
-  salvar();
+/* ================= modo edicao ================= */
+
+function liberarLapis() { $('btn-lapis').classList.add('on'); }
+
+function entrarEdicao() {
+  editando = true;
+  document.body.classList.add('editando');
+  $('card-cliente').style.display = 'none';
+  $('area-edicao').style.display = '';
+  $('rodape-txt').style.display = 'none';
+  $('banner-rascunho').classList.remove('on');
+  preencherAjustes();
+  atualizarStatus();
+  desenhar();
+  window.scrollTo({ top: 0 });
 }
 
-function definir(i, valor) {
-  let n = parseInt(String(valor).replace(/\D/g, ''), 10);
-  if (isNaN(n)) n = 0;
-  estado[i].qtd = Math.max(0, Math.min(999, n));
-  atualizarItem(i);
-  atualizarTotal();
-  salvar();
+function sairEdicao() {
+  editando = false;
+  document.body.classList.remove('editando');
+  $('card-cliente').style.display = '';
+  $('area-edicao').style.display = 'none';
+  $('rodape-txt').style.display = '';
+  aplicarTextos();
+  desenhar();
+  window.scrollTo({ top: 0 });
 }
 
-function atualizarItem(i) {
-  const e = estado[i];
-  const div = $('item-' + i);
-  if (!div) return;
-  div.querySelector('.qtd').value = e.qtd;
-  div.querySelector('[data-acao="menos"]').disabled = e.qtd === 0;
-  div.classList.toggle('ativo', e.qtd > 0);
-  $('sub-' + i).textContent = brl(e.qtd * e.preco);
+$('btn-lapis').addEventListener('click', entrarEdicao);
+$('btn-sair').addEventListener('click', () => {
+  if (pendente && !confirm('Você tem mudanças que ainda não foram publicadas.\nSair mesmo assim? Elas ficam guardadas neste aparelho.')) return;
+  sairEdicao();
+});
+$('btn-ver').addEventListener('click', sairEdicao);
+
+// 5 toques no titulo liberam o lapis, caso ela perca o link com ?editar
+let toques = 0, tmrToques = null;
+$('h-titulo').addEventListener('click', () => {
+  toques++;
+  clearTimeout(tmrToques);
+  tmrToques = setTimeout(() => { toques = 0; }, 2500);
+  if (toques >= 5) {
+    toques = 0;
+    liberarLapis();
+    toast('Botão de edição liberado ✏️');
+  }
+});
+
+function toast(txt) {
+  const t = $('toast');
+  t.textContent = txt;
+  t.classList.add('on');
+  setTimeout(() => t.classList.remove('on'), 2600);
 }
+
+/* ================= ajustes ================= */
+
+function preencherAjustes() {
+  $('cfg-titulo').value = CFG.titulo;
+  $('cfg-sub').value = CFG.subtitulo;
+  $('cfg-frase').value = CFG.frase;
+  $('cfg-autor').value = CFG.autor;
+  $('cfg-zap').value = CFG.whatsapp;
+  $('chave').value = localStorage.getItem(K_CHAVE) || '';
+}
+
+[['cfg-titulo','titulo'],['cfg-sub','subtitulo'],['cfg-frase','frase'],['cfg-autor','autor']].forEach(p => {
+  $(p[0]).addEventListener('input', ev => { CFG[p[1]] = ev.target.value; marcar(); });
+});
+$('cfg-zap').addEventListener('input', ev => {
+  const so = ev.target.value.replace(/\D/g, '');
+  if (so !== ev.target.value) ev.target.value = so;
+  CFG.whatsapp = so;
+  marcar();
+});
+
+$('btn-ajustes').addEventListener('click', () => { preencherAjustes(); $('modal-ajustes').classList.add('on'); });
+$('fechar-ajustes').addEventListener('click', () => $('modal-ajustes').classList.remove('on'));
+$('modal-ajustes').addEventListener('click', ev => { if (ev.target.id === 'modal-ajustes') $('modal-ajustes').classList.remove('on'); });
+
+$('btn-salvar-chave').addEventListener('click', () => {
+  const t = $('chave').value.trim();
+  if (!t) { msg($('msg-chave'), 'Cole a chave antes de guardar.', false); return; }
+  localStorage.setItem(K_CHAVE, t);
+  liberarLapis();
+  msg($('msg-chave'), '✅ Chave guardada neste aparelho. O botão Publicar já funciona.', true);
+});
+
+$('btn-apagar-chave').addEventListener('click', () => {
+  if (!confirm('Apagar a chave de acesso deste aparelho?')) return;
+  localStorage.removeItem(K_CHAVE);
+  $('chave').value = '';
+  msg($('msg-chave'), 'Chave apagada.', true);
+});
+
+$('btn-baixar').addEventListener('click', () => {
+  const blob = new Blob([conteudoJson()], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = ARQUIVO;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  msg($('msg-chave'), 'Arquivo produtos.json baixado. Envie para quem cuida do site.', true);
+});
+
+function msg(el, txt, ok) {
+  el.className = 'msg on ' + (ok ? 'sucesso' : 'falha');
+  el.textContent = txt;
+}
+
+/* ================= descartar ================= */
+
+$('btn-descartar').addEventListener('click', async () => {
+  if (!confirm('Isto apaga o que você editou e traz de volta a lista publicada. Continuar?')) return;
+  localStorage.removeItem(K_RASCUNHO);
+  try {
+    const r = await fetch(ARQUIVO + '?v=' + Date.now(), { cache: 'no-store' });
+    if (r.ok) publicado = await r.json();
+  } catch (err) {}
+  CFG = publicado ? clonar(publicado) : clonar(PADRAO);
+  normalizar(CFG);
+  pendente = false;
+  preencherAjustes();
+  atualizarStatus();
+  desenhar();
+  toast('Lista restaurada');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+/* ================= publicar ================= */
+
+function conteudoJson() {
+  const limpo = {
+    titulo: CFG.titulo.trim(),
+    subtitulo: CFG.subtitulo.trim(),
+    frase: CFG.frase.trim(),
+    autor: CFG.autor.trim(),
+    whatsapp: CFG.whatsapp.trim(),
+    grupos: CFG.grupos.map(g => ({
+      nome: g.nome.trim(),
+      itens: g.itens.map(it => ({ n: it.n.trim(), p: Number(it.p) || 0 }))
+    }))
+  };
+  return JSON.stringify(limpo, null, 2) + '\n';
+}
+
+function problemas() {
+  const p = [];
+  if (!CFG.whatsapp || CFG.whatsapp.length < 12) p.push('O número do WhatsApp parece incompleto.');
+  let semNome = 0, semPreco = 0;
+  CFG.grupos.forEach(g => g.itens.forEach(it => {
+    if (!it.n.trim()) semNome++;
+    if (!it.p || it.p <= 0) semPreco++;
+  }));
+  if (semNome) p.push(semNome + ' produto(s) sem nome.');
+  if (semPreco) p.push(semPreco + ' produto(s) com preço zerado.');
+  if (!CFG.grupos.some(g => g.itens.length)) p.push('Não há nenhum produto na lista.');
+  return p;
+}
+
+function paraBase64(txt) {
+  const bytes = new TextEncoder().encode(txt);
+  let bin = '';
+  bytes.forEach(b => { bin += String.fromCharCode(b); });
+  return btoa(bin);
+}
+
+async function publicar() {
+  const probs = problemas();
+  if (probs.length && !confirm('Atenção:\n\n• ' + probs.join('\n• ') + '\n\nPublicar mesmo assim?')) return;
+
+  const chave = localStorage.getItem(K_CHAVE);
+  if (!chave) {
+    alert('A chave de acesso ainda não foi configurada.\n\nToque em ⚙️ Ajustes e abra "🔑 Chave de acesso".');
+    preencherAjustes();
+    $('det-chave').open = true;
+    $('modal-ajustes').classList.add('on');
+    return;
+  }
+
+  travar(true);
+  try {
+    const url = 'https://api.github.com/repos/' + REPO + '/contents/' + ARQUIVO;
+    const cab = {
+      'Authorization': 'Bearer ' + chave,
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    };
+
+    let sha = null;
+    const atual = await fetch(url + '?ref=' + BRANCH, { headers: cab, cache: 'no-store' });
+    if (atual.ok) sha = (await atual.json()).sha;
+    else if (atual.status === 401) throw new Error('A chave não foi aceita. Gere uma nova em Ajustes.');
+    else if (atual.status === 403) throw new Error('A chave não tem permissão de escrita (Contents = Read and write).');
+
+    const corpo = { message: 'Atualiza lista de produtos', content: paraBase64(conteudoJson()), branch: BRANCH };
+    if (sha) corpo.sha = sha;
+
+    const env = await fetch(url, { method: 'PUT', headers: cab, body: JSON.stringify(corpo) });
+    if (!env.ok) {
+      const e = await env.json().catch(() => ({}));
+      throw new Error(e.message || ('Falhou (código ' + env.status + ')'));
+    }
+
+    pendente = false;
+    localStorage.removeItem(K_RASCUNHO);
+    publicado = clonar(CFG);
+    atualizarStatus();
+    alert('✅ Publicado!\n\nO site atualiza em cerca de 1 minuto. Depois disso todo mundo já vê a lista nova.');
+  } catch (err) {
+    alert('❌ ' + (err.message || 'Não consegui publicar. Verifique a internet e tente de novo.'));
+  } finally {
+    travar(false);
+  }
+}
+
+function travar(sim) {
+  $('btn-publicar').disabled = sim;
+  $('btn-publicar').textContent = sim ? 'Publicando…' : '🚀 Publicar';
+}
+
+$('btn-publicar').addEventListener('click', publicar);
+
+/* ================= pedido ================= */
 
 function atualizarTotal() {
   let total = 0, itens = 0;
-  estado.forEach(e => { total += e.qtd * e.preco; itens += e.qtd; });
+  CFG.grupos.forEach(g => g.itens.forEach(it => {
+    const q = qtds[it.n] || 0;
+    total += q * it.p;
+    itens += q;
+  }));
   $('total').textContent = brl(total);
   $('contador').textContent = itens === 0
     ? 'Nenhum item selecionado'
@@ -375,75 +932,53 @@ function montarTexto() {
   const nome = $('nome').value.trim();
   const jc = $('jc').value.trim();
   let total = 0;
-  const linhas = ['*PEDIDO — ' + CFG.titulo.toUpperCase() + '*', ''];
+  const linhas = ['*PEDIDO — ' + (CFG.titulo || '').toUpperCase() + '*', ''];
   linhas.push('*Nome:* ' + nome);
   if (jc) linhas.push('*Johrei Center:* ' + jc);
   linhas.push('');
   linhas.push('*Itens:*');
-  estado.forEach(e => {
-    if (e.qtd > 0) {
-      const sub = e.qtd * e.preco;
+  CFG.grupos.forEach(g => g.itens.forEach(it => {
+    const q = qtds[it.n] || 0;
+    if (q > 0) {
+      const sub = q * it.p;
       total += sub;
-      linhas.push('• ' + e.qtd + 'x ' + e.nome + ' — ' + brl(sub));
+      linhas.push('• ' + q + 'x ' + it.n + ' — ' + brl(sub));
     }
-  });
+  }));
   linhas.push('');
   linhas.push('*TOTAL: ' + brl(total) + '*');
   return linhas.join('\n');
 }
 
-function salvar() {
+function salvarPedido() {
   try {
-    localStorage.setItem('korin-pedido', JSON.stringify({
-      nome: $('nome').value,
-      jc: $('jc').value,
-      itens: estado.filter(e => e.qtd > 0).map(e => ({ n: e.nome, q: e.qtd }))
-    }));
+    const itens = [];
+    Object.keys(qtds).forEach(n => { if (qtds[n] > 0) itens.push({ n: n, q: qtds[n] }); });
+    localStorage.setItem(K_PEDIDO, JSON.stringify({ nome: $('nome').value, jc: $('jc').value, itens: itens }));
   } catch (err) {}
 }
 
-function carregarRascunho() {
+function carregarPedido() {
   try {
-    const d = JSON.parse(localStorage.getItem('korin-pedido') || '{}');
+    const d = JSON.parse(localStorage.getItem(K_PEDIDO) || '{}');
     if (d.nome) $('nome').value = d.nome;
     if (d.jc) $('jc').value = d.jc;
-    // Casa pelo NOME do produto, entao a lista pode mudar sem baguncar o rascunho
-    if (Array.isArray(d.itens)) {
-      d.itens.forEach(sal => {
-        const i = estado.findIndex(e => e.nome === sal.n);
-        if (i >= 0) estado[i].qtd = Math.max(0, Math.min(999, sal.q || 0));
-      });
-    }
+    if (Array.isArray(d.itens)) d.itens.forEach(i => { qtds[i.n] = Math.max(0, Math.min(999, i.q || 0)); });
   } catch (err) {}
-  estado.forEach((_, i) => atualizarItem(i));
-  atualizarTotal();
 }
-
-document.addEventListener('click', ev => {
-  const b = ev.target.closest('.btn-qtd');
-  if (b) mudar(parseInt(b.dataset.i, 10), b.dataset.acao === 'mais' ? 1 : -1);
-});
-
-document.addEventListener('input', ev => {
-  if (ev.target.classList.contains('qtd')) definir(parseInt(ev.target.dataset.i, 10), ev.target.value);
-});
-
-document.addEventListener('focusin', ev => {
-  if (ev.target.classList.contains('qtd')) ev.target.select();
-});
 
 $('nome').addEventListener('input', () => {
   $('nome').classList.remove('invalido');
   $('aviso-nome').classList.remove('on');
-  salvar();
+  salvarPedido();
 });
-$('jc').addEventListener('input', salvar);
+$('jc').addEventListener('input', salvarPedido);
 
 $('btn-limpar').addEventListener('click', () => {
   if (!confirm('Apagar todas as quantidades deste pedido?')) return;
-  estado.forEach((e, i) => { e.qtd = 0; atualizarItem(i); });
-  atualizarTotal();
-  salvar();
+  qtds = {};
+  salvarPedido();
+  desenhar();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
@@ -456,11 +991,11 @@ $('btn-finalizar').addEventListener('click', () => {
     return;
   }
   $('resumo').textContent = montarTexto().replace(/\*/g, '');
-  $('modal').classList.add('on');
+  $('modal-pedido').classList.add('on');
 });
 
-$('btn-voltar').addEventListener('click', () => $('modal').classList.remove('on'));
-$('modal').addEventListener('click', ev => { if (ev.target.id === 'modal') $('modal').classList.remove('on'); });
+$('btn-voltar').addEventListener('click', () => $('modal-pedido').classList.remove('on'));
+$('modal-pedido').addEventListener('click', ev => { if (ev.target.id === 'modal-pedido') $('modal-pedido').classList.remove('on'); });
 
 $('btn-zap').addEventListener('click', () => {
   window.open('https://wa.me/' + CFG.whatsapp + '?text=' + encodeURIComponent(montarTexto()), '_blank');
@@ -473,11 +1008,8 @@ $('btn-copiar').addEventListener('click', async () => {
     await navigator.clipboard.writeText(txt);
   } catch (err) {
     const ta = document.createElement('textarea');
-    ta.value = txt;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
+    ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
     document.execCommand('copy');
     document.body.removeChild(ta);
   }
@@ -485,7 +1017,7 @@ $('btn-copiar').addEventListener('click', async () => {
   setTimeout(() => { btn.textContent = 'Copiar pedido'; }, 2000);
 });
 
-carregarProdutos();
+iniciar();
 </script>
 </body>
 </html>
