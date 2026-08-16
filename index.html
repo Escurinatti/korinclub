@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Clube de Compras Korin 2026</title>
+<meta name="theme-color" content="#2f7d32">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Korin">
+<style>
+  :root{
+    --verde:#2f7d32;
+    --verde-escuro:#1f5c23;
+    --verde-claro:#e8f4e9;
+    --zap:#25d366;
+    --texto:#20301f;
+    --cinza:#6b7a6b;
+    --borda:#d9e5da;
+    --fundo:#f6f9f5;
+    --branco:#ffffff;
+    --erro:#c0392b;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    background:var(--fundo);
+    color:var(--texto);
+    padding-bottom:160px;
+    font-size:16px;
+  }
+  header{
+    background:linear-gradient(160deg,var(--verde) 0%,var(--verde-escuro) 100%);
+    color:#fff;
+    padding:26px 20px 22px;
+    text-align:center;
+  }
+  header h1{margin:0 0 6px;font-size:22px;line-height:1.25;}
+  header p.sub{margin:0;font-size:14px;opacity:.92;}
+  .frase{
+    background:var(--verde-claro);
+    border-left:4px solid var(--verde);
+    margin:0;
+    padding:16px 20px;
+    font-size:13.5px;
+    line-height:1.55;
+    color:#33513a;
+    font-style:italic;
+  }
+  .frase span{display:block;margin-top:8px;font-style:normal;font-weight:600;font-size:12.5px;}
+  main{max-width:640px;margin:0 auto;padding:16px 12px 0;}
+  .card{
+    background:var(--branco);
+    border:1px solid var(--borda);
+    border-radius:14px;
+    padding:16px;
+    margin-bottom:16px;
+  }
+  .card h2{
+    margin:0 0 14px;
+    font-size:16px;
+    color:var(--verde-escuro);
+  }
+  label{display:block;font-size:14px;font-weight:600;margin-bottom:6px;}
+  input[type=text]{
+    width:100%;
+    padding:13px 12px;
+    font-size:16px;
+    border:1.5px solid var(--borda);
+    border-radius:10px;
+    background:#fff;
+    font-family:inherit;
+    color:var(--texto);
+  }
+  input[type=text]:focus{outline:none;border-color:var(--verde);}
+  input.invalido{border-color:var(--erro);background:#fdf3f2;}
+  .campo{margin-bottom:14px;}
+  .campo:last-child{margin-bottom:0;}
+  .aviso{color:var(--erro);font-size:13px;margin-top:6px;display:none;}
+  .aviso.on{display:block;}
+  h3.grupo{
+    margin:22px 4px 10px;
+    font-size:15px;
+    color:var(--verde-escuro);
+    text-transform:uppercase;
+    letter-spacing:.5px;
+  }
+  .item{
+    background:var(--branco);
+    border:1px solid var(--borda);
+    border-radius:14px;
+    padding:14px;
+    margin-bottom:10px;
+    transition:border-color .15s,background .15s;
+  }
+  .item.ativo{border-color:var(--verde);background:#fbfefb;}
+  .nome{font-size:14.5px;font-weight:600;line-height:1.35;margin-bottom:2px;}
+  .preco{font-size:13px;color:var(--cinza);}
+  .linha{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;}
+  .contador{display:flex;align-items:center;gap:6px;}
+  .btn-qtd{
+    width:44px;height:44px;
+    border:1.5px solid var(--verde);
+    background:#fff;
+    color:var(--verde);
+    font-size:24px;
+    font-weight:700;
+    border-radius:12px;
+    line-height:1;
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    padding:0;
+    font-family:inherit;
+  }
+  .btn-qtd:active{background:var(--verde);color:#fff;}
+  .btn-qtd:disabled{opacity:.35;border-color:var(--borda);color:var(--cinza);}
+  .qtd{
+    width:54px;height:44px;
+    text-align:center;
+    font-size:18px;
+    font-weight:700;
+    border:1.5px solid var(--borda);
+    border-radius:10px;
+    font-family:inherit;
+    color:var(--texto);
+    background:#fff;
+  }
+  .subtotal{font-size:15px;font-weight:700;color:var(--verde-escuro);min-width:88px;text-align:right;}
+  .rodape{
+    position:fixed;left:0;right:0;bottom:0;
+    background:var(--branco);
+    border-top:1px solid var(--borda);
+    box-shadow:0 -4px 18px rgba(0,0,0,.09);
+    padding:12px 14px calc(12px + env(safe-area-inset-bottom));
+    z-index:20;
+  }
+  .rodape-in{max-width:640px;margin:0 auto;}
+  .total-linha{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;}
+  .total-linha .rot{font-size:15px;font-weight:600;}
+  .total-linha .val{font-size:26px;font-weight:800;color:var(--verde-escuro);}
+  .itens-cont{font-size:12.5px;color:var(--cinza);}
+  .botoes{display:flex;gap:8px;}
+  .btn{
+    flex:1;
+    padding:15px 10px;
+    font-size:16px;
+    font-weight:700;
+    border-radius:12px;
+    border:none;
+    cursor:pointer;
+    font-family:inherit;
+  }
+  .btn-zap{background:var(--zap);color:#fff;flex:2;}
+  .btn-zap:disabled{background:#c3d4c5;color:#fff;}
+  .btn-limpar{background:#fff;color:var(--cinza);border:1.5px solid var(--borda);}
+  .modal{
+    position:fixed;inset:0;
+    background:rgba(15,30,15,.55);
+    display:none;
+    align-items:flex-end;
+    z-index:50;
+  }
+  .modal.on{display:flex;}
+  .modal-cx{
+    background:#fff;
+    width:100%;
+    max-width:640px;
+    margin:0 auto;
+    border-radius:18px 18px 0 0;
+    padding:20px 18px calc(20px + env(safe-area-inset-bottom));
+    max-height:88vh;
+    overflow-y:auto;
+  }
+  .modal-cx h2{margin:0 0 4px;font-size:18px;color:var(--verde-escuro);}
+  .modal-cx p.dica{margin:0 0 14px;font-size:13.5px;color:var(--cinza);line-height:1.5;}
+  pre.resumo{
+    background:var(--verde-claro);
+    border-radius:12px;
+    padding:14px;
+    font-size:13px;
+    line-height:1.55;
+    white-space:pre-wrap;
+    word-wrap:break-word;
+    font-family:inherit;
+    margin:0 0 14px;
+    max-height:36vh;
+    overflow-y:auto;
+  }
+  .modal .botoes{flex-direction:column;}
+  .modal .btn{width:100%;}
+  .btn-copiar{background:var(--verde);color:#fff;}
+  .btn-voltar{background:#fff;color:var(--cinza);border:1.5px solid var(--borda);}
+  .rodape-txt{text-align:center;font-size:12px;color:var(--cinza);padding:6px 20px 26px;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌱 Clube de Compras Korin 2026</h1>
+  <p class="sub">Preencha as quantidades — o total é calculado automaticamente</p>
+</header>
+
+<p class="frase">
+  "Respeitando-se e amando-se o solo, sua capacidade natural se manifestará ao máximo. Para tanto, o mais importante é não sujá-lo, mas torná-lo ainda mais puro. Com isso, ele ficará alegre e, logicamente, se tornará mais ativo."
+  <span>— Meishu-Sama, Alicerce do Paraíso, vol. 5</span>
+</p>
+
+<main>
+  <div class="card">
+    <h2>👤 Informações do Cliente</h2>
+    <div class="campo">
+      <label for="nome">Nome *</label>
+      <input type="text" id="nome" placeholder="Seu nome completo" autocomplete="name">
+      <div class="aviso" id="aviso-nome">Por favor, informe seu nome.</div>
+    </div>
+    <div class="campo">
+      <label for="jc">Johrei Center</label>
+      <input type="text" id="jc" placeholder="Ex.: Johrei Center Central" autocomplete="off">
+    </div>
+  </div>
+
+  <div id="lista"></div>
+</main>
+
+<p class="rodape-txt">Ao finalizar, seu pedido é enviado pelo WhatsApp. 💚</p>
+
+<div class="rodape">
+  <div class="rodape-in">
+    <div class="total-linha">
+      <div>
+        <div class="rot">Total Geral</div>
+        <div class="itens-cont" id="contador">Nenhum item selecionado</div>
+      </div>
+      <div class="val" id="total">R$ 0,00</div>
+    </div>
+    <div class="botoes">
+      <button class="btn btn-limpar" id="btn-limpar" type="button">Limpar</button>
+      <button class="btn btn-zap" id="btn-finalizar" type="button" disabled>📲 Enviar pedido</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-cx">
+    <h2>Confira seu pedido</h2>
+    <p class="dica">Se o WhatsApp não abrir sozinho, toque em <strong>Copiar pedido</strong> e cole na conversa.</p>
+    <pre class="resumo" id="resumo"></pre>
+    <div class="botoes">
+      <button class="btn btn-zap" id="btn-zap" type="button">📲 Abrir WhatsApp</button>
+      <button class="btn btn-copiar" id="btn-copiar" type="button">Copiar pedido</button>
+      <button class="btn btn-voltar" id="btn-voltar" type="button">Voltar e editar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ==========================================================
+   >>> CONFIGURACAO — MUDE APENAS ESTA LINHA <<<
+   Coloque o numero do WhatsApp que vai RECEBER os pedidos.
+   Formato: 55 + DDD + numero, so digitos, sem espacos.
+   Exemplo para (11) 98765-4321  =>  '5511987654321'
+   ========================================================== */
+const WHATSAPP = '5521982208226';
+/* ========================================================== */
+
+const PRODUTOS = [
+  { grupo: 'Tabela Ação Social', itens: [
+    { n: 'COXA NGMO 1KG', p: 13.50 },
+    { n: 'COXINHA ASA NGMO 1KG', p: 15.10 },
+    { n: 'SOBRECOXA NGMO 1KG', p: 23.85 },
+    { n: 'FIGADO NGMO 1KG', p: 8.60 },
+    { n: 'PÉ NGMO 1KG', p: 8.50 },
+    { n: 'OVOS S/TRANSG CAIPIRA VERM GRANDE C/ 20 UN', p: 25.45 }
+  ]},
+  { grupo: 'Tabela Complementar', itens: [
+    { n: 'CARNE MOIDA DE FRANGO S/TRANSG 400G', p: 19.92 },
+    { n: 'FILE PEITO NGMO 600G', p: 34.06 },
+    { n: 'CORACAO DE FRANGO NGMO 600G', p: 31.50 },
+    { n: 'HAMBURGUER FRANGO NGMO 360G', p: 27.80 },
+    { n: 'ESPETINHO DE FILE DE COXA NGMO TEMP 400G', p: 18.50 },
+    { n: 'MEL ORG. BISNAGA 300G', p: 26.90 },
+    { n: 'EXTRATO PROPOLIS VERDE ORG 30ML', p: 24.80 },
+    { n: 'SPRAY MEL E PROPOLIS ORG. HORTELA 30ML', p: 16.30 },
+    { n: 'ARROZ AGULHINHA POLIDO ORG 1KG', p: 23.53 },
+    { n: 'ARROZ AGULHINHA INTEGRAL ORG 1KG', p: 22.49 },
+    { n: 'FEIJAO CARIOCA ORG 500G', p: 16.12 },
+    { n: 'FEIJAO PRETO ORG 500G', p: 14.43 },
+    { n: 'MOLHO DE TOMATE AGRICULTURA NATURAL MANJERICÃO KORIN 325G', p: 23.90 },
+    { n: 'MOLHO DE TOMATE AGRICULTURA NATURAL TRADICIONAL KORIN 325G', p: 23.90 },
+    { n: 'MILHO PIPOCA ORGÂNICO KORIN 500G', p: 18.00 },
+    { n: 'FARINHA DE MILHO DE FUBÁ ORGÂNICO 500G', p: 10.50 }
+  ]}
+];
+
+const brl = v => 'R$ ' + v.toFixed(2).replace('.', ',');
+const $ = id => document.getElementById(id);
+
+const estado = [];
+
+function montarLista() {
+  const lista = $('lista');
+  let idx = 0;
+  PRODUTOS.forEach(g => {
+    const h = document.createElement('h3');
+    h.className = 'grupo';
+    h.textContent = g.grupo;
+    lista.appendChild(h);
+
+    g.itens.forEach(it => {
+      const i = idx++;
+      estado.push({ nome: it.n, preco: it.p, qtd: 0 });
+
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.id = 'item-' + i;
+      div.innerHTML =
+        '<div class="nome"></div>' +
+        '<div class="preco"></div>' +
+        '<div class="linha">' +
+          '<div class="contador">' +
+            '<button class="btn-qtd" type="button" data-acao="menos" data-i="' + i + '" disabled>&minus;</button>' +
+            '<input class="qtd" type="text" inputmode="numeric" value="0" data-i="' + i + '" aria-label="Quantidade">' +
+            '<button class="btn-qtd" type="button" data-acao="mais" data-i="' + i + '">+</button>' +
+          '</div>' +
+          '<div class="subtotal" id="sub-' + i + '">R$ 0,00</div>' +
+        '</div>';
+      div.querySelector('.nome').textContent = it.n;
+      div.querySelector('.preco').textContent = brl(it.p);
+      lista.appendChild(div);
+    });
+  });
+}
+
+function mudar(i, delta) {
+  estado[i].qtd = Math.max(0, Math.min(999, estado[i].qtd + delta));
+  atualizarItem(i);
+  atualizarTotal();
+  salvar();
+}
+
+function definir(i, valor) {
+  let n = parseInt(String(valor).replace(/\D/g, ''), 10);
+  if (isNaN(n)) n = 0;
+  estado[i].qtd = Math.max(0, Math.min(999, n));
+  atualizarItem(i);
+  atualizarTotal();
+  salvar();
+}
+
+function atualizarItem(i) {
+  const e = estado[i];
+  const div = $('item-' + i);
+  div.querySelector('.qtd').value = e.qtd;
+  div.querySelector('[data-acao="menos"]').disabled = e.qtd === 0;
+  div.classList.toggle('ativo', e.qtd > 0);
+  $('sub-' + i).textContent = brl(e.qtd * e.preco);
+}
+
+function atualizarTotal() {
+  let total = 0, itens = 0;
+  estado.forEach(e => { total += e.qtd * e.preco; itens += e.qtd; });
+  $('total').textContent = brl(total);
+  $('contador').textContent = itens === 0
+    ? 'Nenhum item selecionado'
+    : itens + (itens === 1 ? ' item selecionado' : ' itens selecionados');
+  $('btn-finalizar').disabled = itens === 0;
+  return total;
+}
+
+function montarTexto() {
+  const nome = $('nome').value.trim();
+  const jc = $('jc').value.trim();
+  let total = 0;
+  const linhas = ['*PEDIDO — CLUBE DE COMPRAS KORIN 2026*', ''];
+  linhas.push('*Nome:* ' + nome);
+  if (jc) linhas.push('*Johrei Center:* ' + jc);
+  linhas.push('');
+  linhas.push('*Itens:*');
+  estado.forEach(e => {
+    if (e.qtd > 0) {
+      const sub = e.qtd * e.preco;
+      total += sub;
+      linhas.push('• ' + e.qtd + 'x ' + e.nome + ' — ' + brl(sub));
+    }
+  });
+  linhas.push('');
+  linhas.push('*TOTAL: ' + brl(total) + '*');
+  return linhas.join('\n');
+}
+
+function salvar() {
+  try {
+    localStorage.setItem('korin2026', JSON.stringify({
+      nome: $('nome').value,
+      jc: $('jc').value,
+      qtds: estado.map(e => e.qtd)
+    }));
+  } catch (err) {}
+}
+
+function carregar() {
+  try {
+    const d = JSON.parse(localStorage.getItem('korin2026') || '{}');
+    if (d.nome) $('nome').value = d.nome;
+    if (d.jc) $('jc').value = d.jc;
+    if (Array.isArray(d.qtds)) {
+      d.qtds.forEach((q, i) => { if (estado[i]) estado[i].qtd = q || 0; });
+    }
+  } catch (err) {}
+  estado.forEach((_, i) => atualizarItem(i));
+  atualizarTotal();
+}
+
+document.addEventListener('click', ev => {
+  const b = ev.target.closest('.btn-qtd');
+  if (b) mudar(parseInt(b.dataset.i, 10), b.dataset.acao === 'mais' ? 1 : -1);
+});
+
+document.addEventListener('input', ev => {
+  if (ev.target.classList.contains('qtd')) definir(parseInt(ev.target.dataset.i, 10), ev.target.value);
+});
+
+document.addEventListener('focusin', ev => {
+  if (ev.target.classList.contains('qtd')) ev.target.select();
+});
+
+$('nome').addEventListener('input', () => {
+  $('nome').classList.remove('invalido');
+  $('aviso-nome').classList.remove('on');
+  salvar();
+});
+$('jc').addEventListener('input', salvar);
+
+$('btn-limpar').addEventListener('click', () => {
+  if (!confirm('Apagar todas as quantidades deste pedido?')) return;
+  estado.forEach((e, i) => { e.qtd = 0; atualizarItem(i); });
+  atualizarTotal();
+  salvar();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+$('btn-finalizar').addEventListener('click', () => {
+  if (!$('nome').value.trim()) {
+    $('nome').classList.add('invalido');
+    $('aviso-nome').classList.add('on');
+    $('nome').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    $('nome').focus();
+    return;
+  }
+  $('resumo').textContent = montarTexto().replace(/\*/g, '');
+  $('modal').classList.add('on');
+});
+
+$('btn-voltar').addEventListener('click', () => $('modal').classList.remove('on'));
+$('modal').addEventListener('click', ev => { if (ev.target.id === 'modal') $('modal').classList.remove('on'); });
+
+$('btn-zap').addEventListener('click', () => {
+  window.open('https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(montarTexto()), '_blank');
+});
+
+$('btn-copiar').addEventListener('click', async () => {
+  const txt = montarTexto().replace(/\*/g, '');
+  const btn = $('btn-copiar');
+  try {
+    await navigator.clipboard.writeText(txt);
+  } catch (err) {
+    const ta = document.createElement('textarea');
+    ta.value = txt;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  }
+  btn.textContent = '✅ Copiado!';
+  setTimeout(() => { btn.textContent = 'Copiar pedido'; }, 2000);
+});
+
+montarLista();
+carregar();
+</script>
+</body>
+</html>
