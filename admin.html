@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Editar lista — Clube Korin</title>
+<meta name="theme-color" content="#1f5c23">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Editar Korin">
+<meta name="robots" content="noindex">
+<style>
+  :root{
+    --verde:#2f7d32;
+    --verde-escuro:#1f5c23;
+    --verde-claro:#e8f4e9;
+    --texto:#20301f;
+    --cinza:#6b7a6b;
+    --borda:#d9e5da;
+    --fundo:#f6f9f5;
+    --branco:#fff;
+    --erro:#c0392b;
+    --aviso:#b8860b;
+    --amarelo-claro:#fdf6e3;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    background:var(--fundo);
+    color:var(--texto);
+    font-size:16px;
+    padding-bottom:130px;
+  }
+  header{
+    background:linear-gradient(160deg,var(--verde) 0%,var(--verde-escuro) 100%);
+    color:#fff;padding:22px 20px;text-align:center;
+  }
+  header h1{margin:0 0 4px;font-size:20px;}
+  header p{margin:0;font-size:13.5px;opacity:.92;}
+  main{max-width:680px;margin:0 auto;padding:16px 12px 0;}
+
+  .passo{
+    background:var(--branco);border:1px solid var(--borda);
+    border-radius:16px;padding:18px 16px;margin-bottom:16px;
+  }
+  .passo-tit{
+    display:flex;align-items:center;gap:10px;margin-bottom:6px;
+  }
+  .passo-num{
+    background:var(--verde);color:#fff;width:28px;height:28px;
+    border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:15px;flex-shrink:0;
+  }
+  .passo-tit h2{margin:0;font-size:17px;color:var(--verde-escuro);}
+  .passo-desc{margin:0 0 16px 38px;font-size:13.5px;color:var(--cinza);line-height:1.5;}
+
+  label{display:block;font-size:13.5px;font-weight:700;margin-bottom:6px;color:var(--verde-escuro);}
+  .ajuda{font-size:12.5px;color:var(--cinza);font-weight:400;margin-top:4px;line-height:1.45;}
+  input[type=text],textarea{
+    width:100%;padding:12px;font-size:16px;
+    border:1.5px solid var(--borda);border-radius:10px;
+    background:#fff;font-family:inherit;color:var(--texto);
+  }
+  textarea{min-height:90px;resize:vertical;line-height:1.5;}
+  input:focus,textarea:focus{outline:none;border-color:var(--verde);}
+  .campo{margin-bottom:16px;}
+  .campo:last-child{margin-bottom:0;}
+
+  .grupo-cx{
+    border:1.5px solid var(--borda);border-radius:16px;
+    margin-bottom:16px;overflow:hidden;background:var(--branco);
+  }
+  .grupo-topo{
+    background:var(--verde-claro);padding:12px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .grupo-topo input{
+    flex:1;font-weight:700;font-size:15px;
+    border-color:#c5ddc8;background:#fff;padding:10px;
+  }
+  .grupo-corpo{padding:12px;}
+  .grupo-vazio{padding:18px 12px;text-align:center;color:var(--cinza);font-size:13.5px;}
+
+  .item-cx{
+    border:1px solid var(--borda);border-radius:12px;
+    padding:12px;margin-bottom:10px;background:#fcfdfc;
+  }
+  .item-cx .nome-in{margin-bottom:8px;font-weight:600;}
+  .item-baixo{display:flex;align-items:center;gap:8px;}
+  .preco-wrap{
+    display:flex;align-items:center;gap:6px;
+    border:1.5px solid var(--borda);border-radius:10px;
+    background:#fff;padding:0 10px;flex:1;
+  }
+  .preco-wrap span{font-size:15px;color:var(--cinza);font-weight:700;}
+  .preco-wrap input{border:none;padding:12px 0;flex:1;min-width:0;font-weight:700;}
+  .preco-wrap:focus-within{border-color:var(--verde);}
+
+  .mini{
+    width:42px;height:44px;border-radius:10px;
+    border:1.5px solid var(--borda);background:#fff;
+    font-size:17px;cursor:pointer;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    font-family:inherit;color:var(--cinza);padding:0;
+  }
+  .mini:active{background:var(--verde-claro);}
+  .mini:disabled{opacity:.3;}
+  .mini.perigo{color:var(--erro);border-color:#f0d5d1;}
+
+  .btn{
+    width:100%;padding:14px 12px;font-size:15.5px;font-weight:700;
+    border-radius:12px;border:none;cursor:pointer;font-family:inherit;
+    margin-bottom:8px;
+  }
+  .btn:last-child{margin-bottom:0;}
+  .btn-add{background:var(--verde-claro);color:var(--verde-escuro);border:1.5px dashed var(--verde);}
+  .btn-principal{background:var(--verde);color:#fff;}
+  .btn-secundario{background:#fff;color:var(--verde-escuro);border:1.5px solid var(--borda);}
+  .btn-perigo{background:#fff;color:var(--erro);border:1.5px solid #f0d5d1;}
+  .btn:disabled{opacity:.5;cursor:default;}
+
+  .barra{
+    position:fixed;left:0;right:0;bottom:0;background:var(--branco);
+    border-top:1px solid var(--borda);box-shadow:0 -4px 18px rgba(0,0,0,.09);
+    padding:10px 14px calc(10px + env(safe-area-inset-bottom));z-index:30;
+  }
+  .barra-in{max-width:680px;margin:0 auto;}
+  .barra-status{
+    font-size:13px;font-weight:700;text-align:center;
+    margin-bottom:8px;color:var(--cinza);
+  }
+  .barra-status.pendente{color:var(--aviso);}
+  .barra-status.ok{color:var(--verde);}
+  .barra .linha2{display:flex;gap:8px;}
+  .barra .linha2 .btn{margin-bottom:0;}
+
+  .modal{position:fixed;inset:0;background:rgba(15,30,15,.6);display:none;align-items:flex-end;z-index:60;}
+  .modal.on{display:flex;}
+  .modal-cx{
+    background:#fff;width:100%;max-width:680px;margin:0 auto;
+    border-radius:18px 18px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom));
+    max-height:90vh;overflow-y:auto;
+  }
+  .modal-cx h2{margin:0 0 12px;font-size:18px;color:var(--verde-escuro);}
+  .previa-grupo{
+    font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;
+    color:var(--verde-escuro);margin:16px 0 8px;
+  }
+  .previa-item{
+    display:flex;justify-content:space-between;gap:12px;
+    padding:9px 0;border-bottom:1px solid var(--borda);font-size:14px;
+  }
+  .previa-item b{color:var(--verde-escuro);white-space:nowrap;}
+
+  .caixa-aviso{
+    background:var(--amarelo-claro);border:1px solid #e8dcc0;
+    border-radius:12px;padding:14px;font-size:13.5px;line-height:1.55;
+    margin-bottom:16px;color:#6b5a20;
+  }
+  .caixa-aviso strong{color:#4a3d12;}
+  details{
+    border:1px solid var(--borda);border-radius:12px;
+    padding:12px;background:#fbfcfb;margin-top:12px;
+  }
+  summary{font-weight:700;font-size:14px;color:var(--verde-escuro);cursor:pointer;}
+  details ol{padding-left:20px;font-size:13.5px;line-height:1.7;color:var(--texto);}
+  details ol code{background:var(--verde-claro);padding:1px 5px;border-radius:4px;font-size:12.5px;}
+  .msg{
+    margin-top:12px;padding:12px;border-radius:10px;
+    font-size:13.5px;line-height:1.5;display:none;
+  }
+  .msg.on{display:block;}
+  .msg.sucesso{background:var(--verde-claro);color:var(--verde-escuro);}
+  .msg.falha{background:#fdf3f2;color:var(--erro);}
+  .rodape-links{text-align:center;padding:8px 20px 30px;font-size:13.5px;}
+  .rodape-links a{color:var(--verde);font-weight:700;text-decoration:none;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>✏️ Editar a lista</h1>
+  <p>Clube de Compras Korin</p>
+</header>
+
+<main>
+
+  <div class="caixa-aviso">
+    <strong>Como funciona:</strong> aqui você muda preços, inclui e tira produtos.
+    O que você edita fica guardado no seu aparelho. Quando terminar, toque em
+    <strong>Publicar</strong> lá embaixo — só aí as mudanças aparecem para quem abre o link do pedido.
+  </div>
+
+  <div class="passo">
+    <div class="passo-tit"><div class="passo-num">1</div><h2>Produtos e preços</h2></div>
+    <p class="passo-desc">Toque em qualquer preço para mudar. Use o 🗑️ para tirar um produto e as setas para trocar a ordem.</p>
+    <div id="grupos"></div>
+    <button class="btn btn-add" id="add-grupo" type="button">➕ Criar nova tabela</button>
+  </div>
+
+  <div class="passo">
+    <div class="passo-tit"><div class="passo-num">2</div><h2>Textos e WhatsApp</h2></div>
+    <p class="passo-desc">Normalmente não precisa mexer. Só mude se o ano virar ou o número mudar.</p>
+
+    <div class="campo">
+      <label for="cfg-titulo">Título da página</label>
+      <input type="text" id="cfg-titulo">
+    </div>
+    <div class="campo">
+      <label for="cfg-sub">Frase abaixo do título</label>
+      <input type="text" id="cfg-sub">
+    </div>
+    <div class="campo">
+      <label for="cfg-frase">Ensinamento</label>
+      <textarea id="cfg-frase"></textarea>
+      <div class="ajuda">Não precisa colocar aspas — elas aparecem sozinhas.</div>
+    </div>
+    <div class="campo">
+      <label for="cfg-autor">Autor do ensinamento</label>
+      <input type="text" id="cfg-autor">
+    </div>
+    <div class="campo">
+      <label for="cfg-zap">WhatsApp que recebe os pedidos</label>
+      <input type="text" id="cfg-zap" inputmode="numeric">
+      <div class="ajuda">Só números: 55 + DDD + número. Exemplo: 5521982208226</div>
+    </div>
+  </div>
+
+  <div class="passo">
+    <div class="passo-tit"><div class="passo-num">3</div><h2>Publicar</h2></div>
+    <p class="passo-desc">Enquanto você não publicar, o site continua mostrando a lista antiga.</p>
+
+    <button class="btn btn-principal" id="btn-publicar" type="button">🚀 Publicar no site</button>
+    <button class="btn btn-secundario" id="btn-baixar" type="button">💾 Baixar arquivo (jeito manual)</button>
+    <div class="msg" id="msg-pub"></div>
+
+    <details id="det-token">
+      <summary>⚙️ Configurar a publicação (fazer uma vez só)</summary>
+      <p style="font-size:13.5px;line-height:1.6;color:var(--cinza);">
+        Para o botão <strong>Publicar</strong> funcionar, é preciso colar aqui uma
+        “chave de acesso” do GitHub. Ela fica guardada só neste aparelho.
+      </p>
+      <ol>
+        <li>Abra <code>github.com/settings/personal-access-tokens/new</code></li>
+        <li>Em <em>Token name</em>, escreva <code>korin</code></li>
+        <li>Em <em>Expiration</em>, escolha <code>No expiration</code></li>
+        <li>Em <em>Repository access</em>, marque <em>Only select repositories</em> e escolha <code>korinclub</code></li>
+        <li>Em <em>Permissions → Repository permissions</em>, ache <strong>Contents</strong> e mude para <strong>Read and write</strong></li>
+        <li>Clique em <em>Generate token</em>, copie o código e cole abaixo</li>
+      </ol>
+      <div class="campo">
+        <label for="token">Chave de acesso</label>
+        <input type="text" id="token" placeholder="github_pat_..." autocomplete="off" spellcheck="false">
+      </div>
+      <button class="btn btn-principal" id="btn-salvar-token" type="button">Guardar chave</button>
+      <button class="btn btn-perigo" id="btn-apagar-token" type="button">Apagar chave deste aparelho</button>
+      <div class="msg" id="msg-token"></div>
+    </details>
+  </div>
+
+  <div class="passo">
+    <div class="passo-tit"><div class="passo-num">↺</div><h2>Recomeçar</h2></div>
+    <p class="passo-desc">Se você se atrapalhar, isto joga fora suas edições e traz de volta a lista que está publicada.</p>
+    <button class="btn btn-perigo" id="btn-descartar" type="button">Descartar minhas mudanças</button>
+  </div>
+
+</main>
+
+<p class="rodape-links"><a href="index.html">← Ver a página de pedidos</a></p>
+
+<div class="barra">
+  <div class="barra-in">
+    <div class="barra-status" id="status">Carregando…</div>
+    <div class="linha2">
+      <button class="btn btn-secundario" id="btn-previa" type="button">👁️ Ver prévia</button>
+      <button class="btn btn-principal" id="btn-publicar2" type="button">🚀 Publicar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modal-previa">
+  <div class="modal-cx">
+    <h2>Como vai ficar</h2>
+    <div id="previa"></div>
+    <button class="btn btn-secundario" id="fechar-previa" type="button" style="margin-top:16px;">Fechar</button>
+  </div>
+</div>
+
+<script>
+const REPO = 'Escurinatti/korinclub';
+const ARQUIVO = 'produtos.json';
+const BRANCH = 'main';
+const CHAVE_RASCUNHO = 'korin-admin-rascunho';
+const CHAVE_TOKEN = 'korin-admin-token';
+
+const $ = id => document.getElementById(id);
+const brl = v => 'R$ ' + (Number(v) || 0).toFixed(2).replace('.', ',');
+
+let dados = null;
+let publicado = null;
+let pendente = false;
+
+/* ---------- carregar ---------- */
+
+async function iniciar() {
+  try {
+    const r = await fetch(ARQUIVO + '?v=' + Date.now(), { cache: 'no-store' });
+    if (r.ok) publicado = await r.json();
+  } catch (err) {}
+
+  const rascunho = localStorage.getItem(CHAVE_RASCUNHO);
+  if (rascunho) {
+    try { dados = JSON.parse(rascunho); } catch (err) {}
+  }
+  if (!dados) dados = publicado ? JSON.parse(JSON.stringify(publicado)) : vazio();
+  normalizar(dados);
+
+  preencherCampos();
+  desenharGrupos();
+  atualizarStatus();
+  $('token').value = localStorage.getItem(CHAVE_TOKEN) || '';
+}
+
+function vazio() {
+  return { titulo: 'Clube de Compras Korin', subtitulo: '', frase: '', autor: '', whatsapp: '', grupos: [] };
+}
+
+function normalizar(d) {
+  d.titulo = d.titulo || '';
+  d.subtitulo = d.subtitulo || '';
+  d.frase = d.frase || '';
+  d.autor = d.autor || '';
+  d.whatsapp = String(d.whatsapp || '');
+  if (!Array.isArray(d.grupos)) d.grupos = [];
+  d.grupos.forEach(g => {
+    g.nome = g.nome || '';
+    if (!Array.isArray(g.itens)) g.itens = [];
+    g.itens.forEach(it => { it.n = it.n || ''; it.p = Number(it.p) || 0; });
+  });
+}
+
+/* ---------- campos gerais ---------- */
+
+function preencherCampos() {
+  $('cfg-titulo').value = dados.titulo;
+  $('cfg-sub').value = dados.subtitulo;
+  $('cfg-frase').value = dados.frase;
+  $('cfg-autor').value = dados.autor;
+  $('cfg-zap').value = dados.whatsapp;
+}
+
+[['cfg-titulo','titulo'],['cfg-sub','subtitulo'],['cfg-frase','frase'],['cfg-autor','autor']].forEach(par => {
+  $(par[0]).addEventListener('input', ev => { dados[par[1]] = ev.target.value; marcar(); });
+});
+$('cfg-zap').addEventListener('input', ev => {
+  const so = ev.target.value.replace(/\D/g, '');
+  if (so !== ev.target.value) ev.target.value = so;
+  dados.whatsapp = so;
+  marcar();
+});
+
+/* ---------- produtos ---------- */
+
+function desenharGrupos() {
+  const cx = $('grupos');
+  cx.innerHTML = '';
+
+  if (!dados.grupos.length) {
+    cx.innerHTML = '<div class="grupo-vazio">Nenhuma tabela ainda. Toque em “Criar nova tabela” abaixo.</div>';
+    return;
+  }
+
+  dados.grupos.forEach((g, gi) => {
+    const box = document.createElement('div');
+    box.className = 'grupo-cx';
+
+    const topo = document.createElement('div');
+    topo.className = 'grupo-topo';
+
+    const inNome = document.createElement('input');
+    inNome.type = 'text';
+    inNome.value = g.nome;
+    inNome.placeholder = 'Nome da tabela';
+    inNome.addEventListener('input', () => { g.nome = inNome.value; marcar(); });
+    topo.appendChild(inNome);
+
+    topo.appendChild(miniBtn('↑', 'Subir tabela', gi === 0, () => moverGrupo(gi, -1)));
+    topo.appendChild(miniBtn('↓', 'Descer tabela', gi === dados.grupos.length - 1, () => moverGrupo(gi, 1)));
+    topo.appendChild(miniBtn('🗑️', 'Excluir tabela', false, () => excluirGrupo(gi), true));
+    box.appendChild(topo);
+
+    const corpo = document.createElement('div');
+    corpo.className = 'grupo-corpo';
+
+    if (!g.itens.length) {
+      const vz = document.createElement('div');
+      vz.className = 'grupo-vazio';
+      vz.textContent = 'Nenhum produto nesta tabela.';
+      corpo.appendChild(vz);
+    }
+
+    g.itens.forEach((it, ii) => corpo.appendChild(linhaItem(g, it, gi, ii)));
+
+    const add = document.createElement('button');
+    add.type = 'button';
+    add.className = 'btn btn-add';
+    add.textContent = '➕ Adicionar produto';
+    add.addEventListener('click', () => {
+      g.itens.push({ n: '', p: 0 });
+      marcar();
+      desenharGrupos();
+      const campos = document.querySelectorAll('.grupo-cx')[gi].querySelectorAll('.nome-in');
+      const ultimo = campos[campos.length - 1];
+      if (ultimo) { ultimo.focus(); ultimo.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    });
+    corpo.appendChild(add);
+
+    box.appendChild(corpo);
+    cx.appendChild(box);
+  });
+}
+
+function linhaItem(g, it, gi, ii) {
+  const cx = document.createElement('div');
+  cx.className = 'item-cx';
+
+  const nome = document.createElement('input');
+  nome.type = 'text';
+  nome.className = 'nome-in';
+  nome.value = it.n;
+  nome.placeholder = 'Nome do produto';
+  nome.addEventListener('input', () => { it.n = nome.value; marcar(); });
+  cx.appendChild(nome);
+
+  const baixo = document.createElement('div');
+  baixo.className = 'item-baixo';
+
+  const pw = document.createElement('div');
+  pw.className = 'preco-wrap';
+  const rs = document.createElement('span');
+  rs.textContent = 'R$';
+  const preco = document.createElement('input');
+  preco.type = 'text';
+  preco.inputMode = 'decimal';
+  preco.value = it.p ? it.p.toFixed(2).replace('.', ',') : '';
+  preco.placeholder = '0,00';
+  preco.addEventListener('input', () => {
+    const limpo = preco.value.replace(/[^\d,.]/g, '').replace('.', ',');
+    if (limpo !== preco.value) preco.value = limpo;
+    it.p = Number(limpo.replace(',', '.')) || 0;
+    marcar();
+  });
+  preco.addEventListener('blur', () => {
+    preco.value = it.p ? it.p.toFixed(2).replace('.', ',') : '';
+  });
+  preco.addEventListener('focus', () => preco.select());
+  pw.appendChild(rs);
+  pw.appendChild(preco);
+  baixo.appendChild(pw);
+
+  baixo.appendChild(miniBtn('↑', 'Subir', ii === 0, () => moverItem(g, ii, -1)));
+  baixo.appendChild(miniBtn('↓', 'Descer', ii === g.itens.length - 1, () => moverItem(g, ii, 1)));
+  baixo.appendChild(miniBtn('🗑️', 'Excluir', false, () => excluirItem(g, ii), true));
+
+  cx.appendChild(baixo);
+  return cx;
+}
+
+function miniBtn(txt, titulo, desativado, acao, perigo) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'mini' + (perigo ? ' perigo' : '');
+  b.textContent = txt;
+  b.title = titulo;
+  b.setAttribute('aria-label', titulo);
+  b.disabled = !!desativado;
+  b.addEventListener('click', acao);
+  return b;
+}
+
+function moverItem(g, i, d) {
+  const alvo = i + d;
+  if (alvo < 0 || alvo >= g.itens.length) return;
+  const tmp = g.itens[i];
+  g.itens[i] = g.itens[alvo];
+  g.itens[alvo] = tmp;
+  marcar();
+  desenharGrupos();
+}
+
+function excluirItem(g, i) {
+  const nome = g.itens[i].n || 'este produto';
+  if (!confirm('Tirar "' + nome + '" da lista?')) return;
+  g.itens.splice(i, 1);
+  marcar();
+  desenharGrupos();
+}
+
+function moverGrupo(gi, d) {
+  const alvo = gi + d;
+  if (alvo < 0 || alvo >= dados.grupos.length) return;
+  const tmp = dados.grupos[gi];
+  dados.grupos[gi] = dados.grupos[alvo];
+  dados.grupos[alvo] = tmp;
+  marcar();
+  desenharGrupos();
+}
+
+function excluirGrupo(gi) {
+  const g = dados.grupos[gi];
+  const aviso = g.itens.length
+    ? 'Excluir a tabela "' + (g.nome || 'sem nome') + '" e os ' + g.itens.length + ' produtos dela?'
+    : 'Excluir a tabela "' + (g.nome || 'sem nome') + '"?';
+  if (!confirm(aviso)) return;
+  dados.grupos.splice(gi, 1);
+  marcar();
+  desenharGrupos();
+}
+
+$('add-grupo').addEventListener('click', () => {
+  const nome = prompt('Nome da nova tabela:', '');
+  if (nome === null) return;
+  dados.grupos.push({ nome: nome.trim() || 'Nova tabela', itens: [] });
+  marcar();
+  desenharGrupos();
+});
+
+/* ---------- rascunho e status ---------- */
+
+function marcar() {
+  pendente = true;
+  try { localStorage.setItem(CHAVE_RASCUNHO, JSON.stringify(dados)); } catch (err) {}
+  atualizarStatus();
+}
+
+function atualizarStatus() {
+  const s = $('status');
+  const totalItens = dados.grupos.reduce((soma, g) => soma + g.itens.length, 0);
+  if (pendente) {
+    s.className = 'barra-status pendente';
+    s.textContent = '● Mudanças ainda não publicadas — ' + totalItens + ' produtos';
+  } else {
+    s.className = 'barra-status ok';
+    s.textContent = '✓ Tudo publicado — ' + totalItens + ' produtos';
+  }
+}
+
+/* ---------- prévia ---------- */
+
+function abrirPrevia() {
+  const cx = $('previa');
+  cx.innerHTML = '';
+  let vazia = true;
+  dados.grupos.forEach(g => {
+    if (!g.itens.length) return;
+    vazia = false;
+    const h = document.createElement('div');
+    h.className = 'previa-grupo';
+    h.textContent = g.nome || '(tabela sem nome)';
+    cx.appendChild(h);
+    g.itens.forEach(it => {
+      const l = document.createElement('div');
+      l.className = 'previa-item';
+      const n = document.createElement('span');
+      n.textContent = it.n || '(produto sem nome)';
+      const p = document.createElement('b');
+      p.textContent = brl(it.p);
+      l.appendChild(n);
+      l.appendChild(p);
+      cx.appendChild(l);
+    });
+  });
+  if (vazia) cx.innerHTML = '<p style="color:var(--cinza);font-size:14px;">Nenhum produto para mostrar.</p>';
+  $('modal-previa').classList.add('on');
+}
+
+$('btn-previa').addEventListener('click', abrirPrevia);
+$('fechar-previa').addEventListener('click', () => $('modal-previa').classList.remove('on'));
+$('modal-previa').addEventListener('click', ev => {
+  if (ev.target.id === 'modal-previa') $('modal-previa').classList.remove('on');
+});
+
+/* ---------- validação ---------- */
+
+function problemas() {
+  const p = [];
+  if (!dados.whatsapp || dados.whatsapp.length < 12) {
+    p.push('O número do WhatsApp parece incompleto (passo 2).');
+  }
+  let semNome = 0, semPreco = 0;
+  dados.grupos.forEach(g => g.itens.forEach(it => {
+    if (!it.n.trim()) semNome++;
+    if (!it.p || it.p <= 0) semPreco++;
+  }));
+  if (semNome) p.push(semNome + ' produto(s) estão sem nome.');
+  if (semPreco) p.push(semPreco + ' produto(s) estão com preço zerado.');
+  if (!dados.grupos.some(g => g.itens.length)) p.push('Não há nenhum produto na lista.');
+  return p;
+}
+
+/* ---------- publicar ---------- */
+
+function mostrarMsg(el, texto, ok) {
+  el.className = 'msg on ' + (ok ? 'sucesso' : 'falha');
+  el.textContent = texto;
+}
+
+function paraBase64(txt) {
+  const bytes = new TextEncoder().encode(txt);
+  let bin = '';
+  bytes.forEach(b => { bin += String.fromCharCode(b); });
+  return btoa(bin);
+}
+
+function conteudoJson() {
+  const limpo = {
+    titulo: dados.titulo.trim(),
+    subtitulo: dados.subtitulo.trim(),
+    frase: dados.frase.trim(),
+    autor: dados.autor.trim(),
+    whatsapp: dados.whatsapp.trim(),
+    grupos: dados.grupos.map(g => ({
+      nome: g.nome.trim(),
+      itens: g.itens.map(it => ({ n: it.n.trim(), p: Number(it.p) || 0 }))
+    }))
+  };
+  return JSON.stringify(limpo, null, 2) + '\n';
+}
+
+async function publicar() {
+  const msg = $('msg-pub');
+  const probs = problemas();
+  if (probs.length) {
+    if (!confirm('Atenção:\n\n• ' + probs.join('\n• ') + '\n\nPublicar mesmo assim?')) return;
+  }
+
+  const token = localStorage.getItem(CHAVE_TOKEN);
+  if (!token) {
+    mostrarMsg(msg, 'A chave de acesso ainda não foi configurada. Abra "⚙️ Configurar a publicação" logo abaixo, ou use o botão "Baixar arquivo".', false);
+    $('det-token').open = true;
+    $('det-token').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  travar(true);
+  mostrarMsg(msg, 'Publicando, aguarde…', true);
+
+  try {
+    const url = 'https://api.github.com/repos/' + REPO + '/contents/' + ARQUIVO;
+    const cab = {
+      'Authorization': 'Bearer ' + token,
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    };
+
+    let sha = null;
+    const atual = await fetch(url + '?ref=' + BRANCH, { headers: cab, cache: 'no-store' });
+    if (atual.ok) sha = (await atual.json()).sha;
+    else if (atual.status === 401) throw new Error('A chave de acesso não foi aceita. Gere uma nova e cole de novo.');
+    else if (atual.status === 403) throw new Error('A chave não tem permissão de escrita. Confira se marcou Contents = Read and write.');
+
+    const corpo = {
+      message: 'Atualiza lista de produtos pelo painel',
+      content: paraBase64(conteudoJson()),
+      branch: BRANCH
+    };
+    if (sha) corpo.sha = sha;
+
+    const env = await fetch(url, { method: 'PUT', headers: cab, body: JSON.stringify(corpo) });
+    if (!env.ok) {
+      const erro = await env.json().catch(() => ({}));
+      throw new Error(erro.message || ('Falhou (código ' + env.status + ')'));
+    }
+
+    pendente = false;
+    atualizarStatus();
+    mostrarMsg(msg, '✅ Publicado! O site atualiza em cerca de 1 minuto. Depois abra a página de pedidos para conferir.', true);
+  } catch (err) {
+    mostrarMsg(msg, '❌ ' + (err.message || 'Não consegui publicar. Verifique a internet e tente de novo.'), false);
+  } finally {
+    travar(false);
+  }
+}
+
+function travar(sim) {
+  $('btn-publicar').disabled = sim;
+  $('btn-publicar2').disabled = sim;
+  $('btn-publicar').textContent = sim ? 'Publicando…' : '🚀 Publicar no site';
+  $('btn-publicar2').textContent = sim ? '…' : '🚀 Publicar';
+}
+
+$('btn-publicar').addEventListener('click', publicar);
+$('btn-publicar2').addEventListener('click', () => {
+  $('btn-publicar').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  publicar();
+});
+
+$('btn-baixar').addEventListener('click', () => {
+  const blob = new Blob([conteudoJson()], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = ARQUIVO;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  mostrarMsg($('msg-pub'), 'Arquivo produtos.json baixado. Envie este arquivo para quem cuida do site, ou suba nele em github.com/' + REPO + ' pelo botão Add file → Upload files.', true);
+});
+
+/* ---------- chave de acesso ---------- */
+
+$('btn-salvar-token').addEventListener('click', () => {
+  const t = $('token').value.trim();
+  if (!t) { mostrarMsg($('msg-token'), 'Cole a chave antes de guardar.', false); return; }
+  localStorage.setItem(CHAVE_TOKEN, t);
+  mostrarMsg($('msg-token'), '✅ Chave guardada neste aparelho. Agora o botão Publicar já funciona.', true);
+});
+
+$('btn-apagar-token').addEventListener('click', () => {
+  if (!confirm('Apagar a chave de acesso deste aparelho?')) return;
+  localStorage.removeItem(CHAVE_TOKEN);
+  $('token').value = '';
+  mostrarMsg($('msg-token'), 'Chave apagada. O botão Publicar deixa de funcionar até você colar uma nova.', true);
+});
+
+/* ---------- descartar ---------- */
+
+$('btn-descartar').addEventListener('click', async () => {
+  if (!confirm('Isto apaga tudo que você editou e traz de volta a lista publicada. Continuar?')) return;
+  localStorage.removeItem(CHAVE_RASCUNHO);
+  try {
+    const r = await fetch(ARQUIVO + '?v=' + Date.now(), { cache: 'no-store' });
+    if (r.ok) publicado = await r.json();
+  } catch (err) {}
+  dados = publicado ? JSON.parse(JSON.stringify(publicado)) : vazio();
+  normalizar(dados);
+  pendente = false;
+  preencherCampos();
+  desenharGrupos();
+  atualizarStatus();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+window.addEventListener('beforeunload', ev => {
+  if (pendente) { ev.preventDefault(); ev.returnValue = ''; }
+});
+
+iniciar();
+</script>
+</body>
+</html>
