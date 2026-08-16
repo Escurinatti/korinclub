@@ -191,18 +191,19 @@
   .btn-copiar{background:var(--verde);color:#fff;}
   .btn-voltar{background:#fff;color:var(--cinza);border:1.5px solid var(--borda);}
   .rodape-txt{text-align:center;font-size:12px;color:var(--cinza);padding:6px 20px 26px;}
+  .carregando{text-align:center;padding:40px 20px;color:var(--cinza);font-size:14px;}
 </style>
 </head>
 <body>
 
 <header>
-  <h1>🌱 Clube de Compras Korin 2026</h1>
-  <p class="sub">Preencha as quantidades — o total é calculado automaticamente</p>
+  <h1 id="h-titulo">🌱 Clube de Compras Korin 2026</h1>
+  <p class="sub" id="h-sub">Preencha as quantidades — o total é calculado automaticamente</p>
 </header>
 
 <p class="frase">
-  "Respeitando-se e amando-se o solo, sua capacidade natural se manifestará ao máximo. Para tanto, o mais importante é não sujá-lo, mas torná-lo ainda mais puro. Com isso, ele ficará alegre e, logicamente, se tornará mais ativo."
-  <span>— Meishu-Sama, Alicerce do Paraíso, vol. 5</span>
+  <span id="h-frase"></span>
+  <span id="h-autor"></span>
 </p>
 
 <main>
@@ -219,7 +220,7 @@
     </div>
   </div>
 
-  <div id="lista"></div>
+  <div id="lista"><div class="carregando">Carregando produtos…</div></div>
 </main>
 
 <p class="rodape-txt">Ao finalizar, seu pedido é enviado pelo WhatsApp. 💚</p>
@@ -254,61 +255,60 @@
 </div>
 
 <script>
-/* ==========================================================
-   >>> CONFIGURACAO — MUDE APENAS ESTA LINHA <<<
-   Coloque o numero do WhatsApp que vai RECEBER os pedidos.
-   Formato: 55 + DDD + numero, so digitos, sem espacos.
-   Exemplo para (11) 98765-4321  =>  '5511987654321'
-   ========================================================== */
-const WHATSAPP = '5521982208226';
-/* ========================================================== */
+/* Os produtos, precos e o numero do WhatsApp ficam no arquivo produtos.json.
+   Para mudar qualquer coisa, use a pagina admin.html — nao precisa mexer aqui. */
 
-const PRODUTOS = [
-  { grupo: 'Tabela Ação Social', itens: [
-    { n: 'COXA NGMO 1KG', p: 13.50 },
-    { n: 'COXINHA ASA NGMO 1KG', p: 15.10 },
-    { n: 'SOBRECOXA NGMO 1KG', p: 23.85 },
-    { n: 'FIGADO NGMO 1KG', p: 8.60 },
-    { n: 'PÉ NGMO 1KG', p: 8.50 },
-    { n: 'OVOS S/TRANSG CAIPIRA VERM GRANDE C/ 20 UN', p: 25.45 }
-  ]},
-  { grupo: 'Tabela Complementar', itens: [
-    { n: 'CARNE MOIDA DE FRANGO S/TRANSG 400G', p: 19.92 },
-    { n: 'FILE PEITO NGMO 600G', p: 34.06 },
-    { n: 'CORACAO DE FRANGO NGMO 600G', p: 31.50 },
-    { n: 'HAMBURGUER FRANGO NGMO 360G', p: 27.80 },
-    { n: 'ESPETINHO DE FILE DE COXA NGMO TEMP 400G', p: 18.50 },
-    { n: 'MEL ORG. BISNAGA 300G', p: 26.90 },
-    { n: 'EXTRATO PROPOLIS VERDE ORG 30ML', p: 24.80 },
-    { n: 'SPRAY MEL E PROPOLIS ORG. HORTELA 30ML', p: 16.30 },
-    { n: 'ARROZ AGULHINHA POLIDO ORG 1KG', p: 23.53 },
-    { n: 'ARROZ AGULHINHA INTEGRAL ORG 1KG', p: 22.49 },
-    { n: 'FEIJAO CARIOCA ORG 500G', p: 16.12 },
-    { n: 'FEIJAO PRETO ORG 500G', p: 14.43 },
-    { n: 'MOLHO DE TOMATE AGRICULTURA NATURAL MANJERICÃO KORIN 325G', p: 23.90 },
-    { n: 'MOLHO DE TOMATE AGRICULTURA NATURAL TRADICIONAL KORIN 325G', p: 23.90 },
-    { n: 'MILHO PIPOCA ORGÂNICO KORIN 500G', p: 18.00 },
-    { n: 'FARINHA DE MILHO DE FUBÁ ORGÂNICO 500G', p: 10.50 }
-  ]}
-];
+const PADRAO = {
+  titulo: 'Clube de Compras Korin 2026',
+  subtitulo: 'Preencha as quantidades — o total é calculado automaticamente',
+  frase: '',
+  autor: '',
+  whatsapp: '5521982208226',
+  grupos: []
+};
+
+let CFG = PADRAO;
+const estado = [];
 
 const brl = v => 'R$ ' + v.toFixed(2).replace('.', ',');
 const $ = id => document.getElementById(id);
 
-const estado = [];
+async function carregarProdutos() {
+  try {
+    const r = await fetch('produtos.json?v=' + Date.now(), { cache: 'no-store' });
+    if (r.ok) {
+      const j = await r.json();
+      if (j && Array.isArray(j.grupos) && j.grupos.length) CFG = Object.assign({}, PADRAO, j);
+    }
+  } catch (err) {}
+
+  document.title = CFG.titulo;
+  $('h-titulo').textContent = '🌱 ' + CFG.titulo;
+  $('h-sub').textContent = CFG.subtitulo || '';
+  $('h-frase').textContent = CFG.frase ? '"' + CFG.frase + '"' : '';
+  $('h-autor').textContent = CFG.autor || '';
+  if (!CFG.frase && !CFG.autor) document.querySelector('.frase').style.display = 'none';
+
+  montarLista();
+  carregarRascunho();
+}
 
 function montarLista() {
   const lista = $('lista');
+  lista.innerHTML = '';
   let idx = 0;
-  PRODUTOS.forEach(g => {
+
+  CFG.grupos.forEach(g => {
+    if (!g.itens || !g.itens.length) return;
     const h = document.createElement('h3');
     h.className = 'grupo';
-    h.textContent = g.grupo;
+    h.textContent = g.nome;
     lista.appendChild(h);
 
     g.itens.forEach(it => {
       const i = idx++;
-      estado.push({ nome: it.n, preco: it.p, qtd: 0 });
+      const preco = Number(it.p) || 0;
+      estado.push({ nome: it.n, preco: preco, qtd: 0 });
 
       const div = document.createElement('div');
       div.className = 'item';
@@ -325,10 +325,14 @@ function montarLista() {
           '<div class="subtotal" id="sub-' + i + '">R$ 0,00</div>' +
         '</div>';
       div.querySelector('.nome').textContent = it.n;
-      div.querySelector('.preco').textContent = brl(it.p);
+      div.querySelector('.preco').textContent = brl(preco);
       lista.appendChild(div);
     });
   });
+
+  if (!estado.length) {
+    lista.innerHTML = '<div class="carregando">Nenhum produto cadastrado no momento.</div>';
+  }
 }
 
 function mudar(i, delta) {
@@ -350,6 +354,7 @@ function definir(i, valor) {
 function atualizarItem(i) {
   const e = estado[i];
   const div = $('item-' + i);
+  if (!div) return;
   div.querySelector('.qtd').value = e.qtd;
   div.querySelector('[data-acao="menos"]').disabled = e.qtd === 0;
   div.classList.toggle('ativo', e.qtd > 0);
@@ -364,14 +369,13 @@ function atualizarTotal() {
     ? 'Nenhum item selecionado'
     : itens + (itens === 1 ? ' item selecionado' : ' itens selecionados');
   $('btn-finalizar').disabled = itens === 0;
-  return total;
 }
 
 function montarTexto() {
   const nome = $('nome').value.trim();
   const jc = $('jc').value.trim();
   let total = 0;
-  const linhas = ['*PEDIDO — CLUBE DE COMPRAS KORIN 2026*', ''];
+  const linhas = ['*PEDIDO — ' + CFG.titulo.toUpperCase() + '*', ''];
   linhas.push('*Nome:* ' + nome);
   if (jc) linhas.push('*Johrei Center:* ' + jc);
   linhas.push('');
@@ -390,21 +394,25 @@ function montarTexto() {
 
 function salvar() {
   try {
-    localStorage.setItem('korin2026', JSON.stringify({
+    localStorage.setItem('korin-pedido', JSON.stringify({
       nome: $('nome').value,
       jc: $('jc').value,
-      qtds: estado.map(e => e.qtd)
+      itens: estado.filter(e => e.qtd > 0).map(e => ({ n: e.nome, q: e.qtd }))
     }));
   } catch (err) {}
 }
 
-function carregar() {
+function carregarRascunho() {
   try {
-    const d = JSON.parse(localStorage.getItem('korin2026') || '{}');
+    const d = JSON.parse(localStorage.getItem('korin-pedido') || '{}');
     if (d.nome) $('nome').value = d.nome;
     if (d.jc) $('jc').value = d.jc;
-    if (Array.isArray(d.qtds)) {
-      d.qtds.forEach((q, i) => { if (estado[i]) estado[i].qtd = q || 0; });
+    // Casa pelo NOME do produto, entao a lista pode mudar sem baguncar o rascunho
+    if (Array.isArray(d.itens)) {
+      d.itens.forEach(sal => {
+        const i = estado.findIndex(e => e.nome === sal.n);
+        if (i >= 0) estado[i].qtd = Math.max(0, Math.min(999, sal.q || 0));
+      });
     }
   } catch (err) {}
   estado.forEach((_, i) => atualizarItem(i));
@@ -455,7 +463,7 @@ $('btn-voltar').addEventListener('click', () => $('modal').classList.remove('on'
 $('modal').addEventListener('click', ev => { if (ev.target.id === 'modal') $('modal').classList.remove('on'); });
 
 $('btn-zap').addEventListener('click', () => {
-  window.open('https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(montarTexto()), '_blank');
+  window.open('https://wa.me/' + CFG.whatsapp + '?text=' + encodeURIComponent(montarTexto()), '_blank');
 });
 
 $('btn-copiar').addEventListener('click', async () => {
@@ -477,8 +485,7 @@ $('btn-copiar').addEventListener('click', async () => {
   setTimeout(() => { btn.textContent = 'Copiar pedido'; }, 2000);
 });
 
-montarLista();
-carregar();
+carregarProdutos();
 </script>
 </body>
 </html>
