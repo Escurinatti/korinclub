@@ -216,6 +216,11 @@
   .msg.on{display:block;}
   .msg.sucesso{background:var(--verde-claro);color:var(--verde-escuro);}
   .msg.falha{background:#fdf3f2;color:var(--erro);}
+  .alerta-senha{
+    background:#fdf3f2;border:1px solid #f0d5d1;border-radius:10px;
+    padding:12px;font-size:13px;line-height:1.55;color:#8a3123;margin-bottom:12px;
+  }
+  .alerta-senha code{background:#fff;padding:1px 5px;border-radius:4px;word-break:break-all;}
 
   .rodape-txt{text-align:center;font-size:12px;color:var(--cinza);padding:6px 20px 26px;}
   .carregando{text-align:center;padding:40px 20px;color:var(--cinza);font-size:14px;}
@@ -366,8 +371,14 @@
     </div>
 
     <details id="det-chave">
-      <summary>🔑 Chave de acesso (configurar uma vez só)</summary>
-      <p class="ajuda">Sem ela o botão Publicar não funciona. A chave fica guardada só neste aparelho.</p>
+      <summary>🔧 Configuração técnica — quem cuida do site</summary>
+      <div class="alerta-senha">
+        ⚠️ <strong>Isto NÃO é a sua senha de entrar.</strong><br>
+        A senha curta que você digita para editar é uma coisa. Aqui vai um código
+        bem comprido do GitHub, que começa com <code>github_pat_</code> e é gerado
+        uma única vez por quem cuida do site. Se você não tem esse código, pode fechar
+        esta parte — não é com você.
+      </div>
       <ol>
         <li>Abra <code>github.com/settings/personal-access-tokens/new</code></li>
         <li><em>Token name</em>: <code>korin</code></li>
@@ -377,7 +388,7 @@
         <li><em>Generate token</em>, copie e cole abaixo</li>
       </ol>
       <div class="campo">
-        <label for="chave">Chave</label>
+        <label for="chave">Código do GitHub (não é a senha de entrar)</label>
         <input type="text" id="chave" placeholder="github_pat_..." autocomplete="off" spellcheck="false">
       </div>
       <button class="btn btn-principal" id="btn-salvar-chave" type="button">Guardar chave</button>
@@ -884,12 +895,42 @@ $('fechar-ajustes').addEventListener('click', () => $('modal-ajustes').classList
 $('btn-sair-conta').addEventListener('click', sairDaConta);
 $('modal-ajustes').addEventListener('click', ev => { if (ev.target.id === 'modal-ajustes') $('modal-ajustes').classList.remove('on'); });
 
-$('btn-salvar-chave').addEventListener('click', () => {
+$('btn-salvar-chave').addEventListener('click', async () => {
+  const btn = $('btn-salvar-chave');
   const t = $('chave').value.trim();
-  if (!t) { msg($('msg-chave'), 'Cole a chave antes de guardar.', false); return; }
-  localStorage.setItem(K_CHAVE, t);
-  liberarLapis();
-  msg($('msg-chave'), '✅ Chave guardada neste aparelho. O botão Publicar já funciona.', true);
+
+  if (!t) { msg($('msg-chave'), 'Cole o código antes de guardar.', false); return; }
+
+  // O erro mais comum: digitar aqui a senha curta de entrar
+  if (!/^(github_pat_|ghp_|gho_|ghs_)/.test(t)) {
+    msg($('msg-chave'),
+      '❌ Isso não é o código do GitHub — parece a senha de entrar, que é outra coisa. ' +
+      'O código certo é bem comprido e começa com github_pat_. Peça para quem cuida do site.', false);
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Conferindo…';
+  msg($('msg-chave'), 'Conferindo o código com o GitHub…', true);
+
+  try {
+    const r = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + ARQUIVO + '?ref=' + BRANCH, {
+      headers: { 'Authorization': 'Bearer ' + t, 'Accept': 'application/vnd.github+json' },
+      cache: 'no-store'
+    });
+    if (r.status === 401) throw new Error('O GitHub não aceitou este código. Ele pode estar incompleto ou já ter vencido.');
+    if (r.status === 403 || r.status === 404) throw new Error('O código não tem permissão neste repositório. Confira se marcou Contents = Read and write para korinclub.');
+    if (!r.ok) throw new Error('Não consegui conferir agora (código ' + r.status + '). Tente de novo.');
+
+    localStorage.setItem(K_CHAVE, t);
+    liberarLapis();
+    msg($('msg-chave'), '✅ Código conferido e guardado neste aparelho. O botão Publicar já funciona.', true);
+  } catch (err) {
+    msg($('msg-chave'), '❌ ' + err.message, false);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Guardar chave';
+  }
 });
 
 $('btn-apagar-chave').addEventListener('click', () => {
@@ -977,10 +1018,10 @@ async function publicar() {
 
   const chave = localStorage.getItem(K_CHAVE);
   if (!chave) {
-    alert('A chave de acesso ainda não foi configurada.\n\nToque em ⚙️ Ajustes e abra "🔑 Chave de acesso".');
-    preencherAjustes();
-    $('det-chave').open = true;
-    $('modal-ajustes').classList.add('on');
+    alert('Este aparelho ainda não está liberado para publicar.\n\n' +
+          'Isso é uma configuração técnica, feita uma vez só por quem cuida do site — ' +
+          'não é a sua senha de entrar.\n\n' +
+          'Suas mudanças estão salvas aqui e não se perdem. Peça para liberarem este celular.');
     return;
   }
 
