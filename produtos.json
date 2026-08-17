@@ -3,7 +3,10 @@
   "subtitulo": "Preencha as quantidades — o total é calculado automaticamente",
   "frase": "Respeitando-se e amando-se o solo, sua capacidade natural se manifestará ao máximo. Para tanto, o mais importante é não sujá-lo, mas torná-lo ainda mais puro. Com isso, ele ficará alegre e, logicamente, se tornará mais ativo.",
   "autor": "— Meishu-Sama, Alicerce do Paraíso, vol. 5",
-  "whatsapp": "5521982208226",
+  "destinatarios": [
+    { "nome": "Mãe", "numero": "5521982208226" },
+    { "nome": "Alexandre", "numero": "5521997482599" }
+  ],
   "grupos": [
     {
       "nome": "Tabela Ação Social",
