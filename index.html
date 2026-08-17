@@ -315,7 +315,7 @@
     <p class="dica">Se o WhatsApp não abrir sozinho, toque em <strong>Copiar pedido</strong> e cole na conversa.</p>
     <pre class="resumo" id="resumo"></pre>
     <div class="botoes">
-      <button class="btn btn-zap" id="btn-zap" type="button">📲 Abrir WhatsApp</button>
+      <div id="destinos" style="display:contents;"></div>
       <button class="btn btn-copiar" id="btn-copiar" type="button">Copiar pedido</button>
       <button class="btn btn-secundario" id="btn-voltar" type="button">Voltar e editar</button>
     </div>
@@ -365,9 +365,13 @@
       <input type="text" id="cfg-autor">
     </div>
     <div class="campo">
-      <label for="cfg-zap">WhatsApp que recebe os pedidos</label>
-      <input type="text" id="cfg-zap" inputmode="numeric">
-      <div class="ajuda">Só números: 55 + DDD + número. Exemplo: 5521982208226</div>
+      <label>Quem recebe os pedidos</label>
+      <div id="cfg-destinos"></div>
+      <button class="btn btn-add" id="add-destino" type="button">➕ Adicionar outro WhatsApp</button>
+      <div class="ajuda">
+        Quem faz o pedido escolhe para qual desses mandar. Só números:
+        55 + DDD + número — exemplo: 5521982208226
+      </div>
     </div>
 
     <details id="det-chave">
@@ -482,7 +486,7 @@ function sairDaConta() {
 const $ = id => document.getElementById(id);
 const brl = v => 'R$ ' + (Number(v) || 0).toFixed(2).replace('.', ',');
 
-const PADRAO = { titulo: 'Clube de Compras Korin', subtitulo: '', frase: '', autor: '', whatsapp: '', grupos: [] };
+const PADRAO = { titulo: 'Clube de Compras Korin', subtitulo: '', frase: '', autor: '', destinatarios: [], grupos: [] };
 
 let CFG = null;         // lista mostrada agora (publicada ou rascunho)
 let publicado = null;   // o que esta no ar
@@ -524,7 +528,17 @@ const clonar = o => JSON.parse(JSON.stringify(o));
 
 function normalizar(d) {
   ['titulo','subtitulo','frase','autor'].forEach(k => { d[k] = d[k] || ''; });
-  d.whatsapp = String(d.whatsapp || '');
+
+  // Aceita tanto o formato novo (varios destinatarios) quanto o antigo (um numero so)
+  if (!Array.isArray(d.destinatarios)) d.destinatarios = [];
+  d.destinatarios = d.destinatarios
+    .filter(x => x && (x.numero || x.nome))
+    .map(x => ({ nome: String(x.nome || '').trim(), numero: String(x.numero || '').replace(/\D/g, '') }));
+  if (!d.destinatarios.length && d.whatsapp) {
+    d.destinatarios = [{ nome: '', numero: String(d.whatsapp).replace(/\D/g, '') }];
+  }
+  delete d.whatsapp;
+
   if (!Array.isArray(d.grupos)) d.grupos = [];
   d.grupos.forEach(g => {
     g.nome = g.nome || '';
@@ -876,18 +890,73 @@ function preencherAjustes() {
   $('cfg-sub').value = CFG.subtitulo;
   $('cfg-frase').value = CFG.frase;
   $('cfg-autor').value = CFG.autor;
-  $('cfg-zap').value = CFG.whatsapp;
   $('chave').value = localStorage.getItem(K_CHAVE) || '';
+  desenharDestinos();
+}
+
+function desenharDestinos() {
+  const cx = $('cfg-destinos');
+  cx.innerHTML = '';
+
+  if (!CFG.destinatarios.length) {
+    const v = document.createElement('div');
+    v.className = 'ajuda';
+    v.style.marginBottom = '10px';
+    v.textContent = 'Nenhum WhatsApp cadastrado ainda.';
+    cx.appendChild(v);
+  }
+
+  CFG.destinatarios.forEach((d, i) => {
+    const cx2 = document.createElement('div');
+    cx2.className = 'item-cx';
+    cx2.style.marginBottom = '10px';
+
+    const nome = document.createElement('input');
+    nome.type = 'text';
+    nome.className = 'nome-in';
+    nome.value = d.nome;
+    nome.placeholder = 'Nome (ex.: Mãe)';
+    nome.addEventListener('input', () => { d.nome = nome.value; marcar(); });
+    cx2.appendChild(nome);
+
+    const baixo = document.createElement('div');
+    baixo.className = 'item-baixo';
+
+    const num = document.createElement('input');
+    num.type = 'text';
+    num.inputMode = 'numeric';
+    num.value = d.numero;
+    num.placeholder = '5521999999999';
+    num.style.cssText = 'flex:1;min-width:0;font-weight:700;';
+    num.addEventListener('input', () => {
+      const so = num.value.replace(/\D/g, '');
+      if (so !== num.value) num.value = so;
+      d.numero = so;
+      marcar();
+    });
+    baixo.appendChild(num);
+    baixo.appendChild(mini('🗑️', 'Remover este WhatsApp', false, () => {
+      if (!confirm('Tirar "' + (d.nome || d.numero) + '" da lista de quem recebe?')) return;
+      CFG.destinatarios.splice(i, 1);
+      marcar();
+      desenharDestinos();
+    }, true));
+
+    cx2.appendChild(baixo);
+    cx.appendChild(cx2);
+  });
 }
 
 [['cfg-titulo','titulo'],['cfg-sub','subtitulo'],['cfg-frase','frase'],['cfg-autor','autor']].forEach(p => {
   $(p[0]).addEventListener('input', ev => { CFG[p[1]] = ev.target.value; marcar(); });
 });
-$('cfg-zap').addEventListener('input', ev => {
-  const so = ev.target.value.replace(/\D/g, '');
-  if (so !== ev.target.value) ev.target.value = so;
-  CFG.whatsapp = so;
+$('add-destino').addEventListener('click', () => {
+  CFG.destinatarios.push({ nome: '', numero: '' });
   marcar();
+  desenharDestinos();
+  const campos = $('cfg-destinos').querySelectorAll('.nome-in');
+  const ultimo = campos[campos.length - 1];
+  if (ultimo) ultimo.focus();
 });
 
 $('btn-ajustes').addEventListener('click', () => { preencherAjustes(); $('modal-ajustes').classList.add('on'); });
@@ -982,7 +1051,9 @@ function conteudoJson() {
     subtitulo: CFG.subtitulo.trim(),
     frase: CFG.frase.trim(),
     autor: CFG.autor.trim(),
-    whatsapp: CFG.whatsapp.trim(),
+    destinatarios: CFG.destinatarios
+      .filter(d => d.numero.trim())
+      .map(d => ({ nome: d.nome.trim(), numero: d.numero.trim() })),
     grupos: CFG.grupos.map(g => ({
       nome: g.nome.trim(),
       itens: g.itens.map(it => ({ n: it.n.trim(), p: Number(it.p) || 0 }))
@@ -993,7 +1064,12 @@ function conteudoJson() {
 
 function problemas() {
   const p = [];
-  if (!CFG.whatsapp || CFG.whatsapp.length < 12) p.push('O número do WhatsApp parece incompleto.');
+  const validos = CFG.destinatarios.filter(d => d.numero.length >= 12);
+  if (!validos.length) p.push('Nenhum WhatsApp válido cadastrado para receber os pedidos.');
+  else if (validos.length < CFG.destinatarios.length) p.push('Algum número de WhatsApp está incompleto.');
+  if (CFG.destinatarios.length > 1 && CFG.destinatarios.some(d => !d.nome.trim())) {
+    p.push('Com mais de um WhatsApp, cada um precisa de um nome para quem faz o pedido escolher.');
+  }
   let semNome = 0, semPreco = 0;
   CFG.grupos.forEach(g => g.itens.forEach(it => {
     if (!it.n.trim()) semNome++;
@@ -1148,15 +1224,45 @@ $('btn-finalizar').addEventListener('click', () => {
     return;
   }
   $('resumo').textContent = montarTexto().replace(/\*/g, '');
+  montarBotoesEnvio();
   $('modal-pedido').classList.add('on');
 });
 
+function montarBotoesEnvio() {
+  const cx = $('destinos');
+  cx.innerHTML = '';
+  const lista = (CFG.destinatarios || []).filter(d => d.numero);
+
+  if (!lista.length) {
+    const p = document.createElement('div');
+    p.className = 'msg on falha';
+    p.textContent = 'Nenhum WhatsApp cadastrado. Use "Copiar pedido" e envie manualmente.';
+    cx.appendChild(p);
+    return;
+  }
+
+  const varios = lista.length > 1;
+  if (varios) {
+    const t = document.createElement('div');
+    t.style.cssText = 'font-size:13.5px;font-weight:700;color:var(--verde-escuro);margin-bottom:2px;';
+    t.textContent = 'Enviar o pedido para:';
+    cx.appendChild(t);
+  }
+
+  lista.forEach(d => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'btn btn-zap';
+    b.textContent = varios && d.nome ? '📲 ' + d.nome : '📲 Abrir WhatsApp';
+    b.addEventListener('click', () => {
+      window.open('https://wa.me/' + d.numero + '?text=' + encodeURIComponent(montarTexto()), '_blank');
+    });
+    cx.appendChild(b);
+  });
+}
+
 $('btn-voltar').addEventListener('click', () => $('modal-pedido').classList.remove('on'));
 $('modal-pedido').addEventListener('click', ev => { if (ev.target.id === 'modal-pedido') $('modal-pedido').classList.remove('on'); });
-
-$('btn-zap').addEventListener('click', () => {
-  window.open('https://wa.me/' + CFG.whatsapp + '?text=' + encodeURIComponent(montarTexto()), '_blank');
-});
 
 $('btn-copiar').addEventListener('click', async () => {
   const txt = montarTexto().replace(/\*/g, '');
