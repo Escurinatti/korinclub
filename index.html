@@ -80,6 +80,46 @@
   }
   .soma-pessoa b{color:var(--verde-escuro);}
   .soma-pessoa .det{color:var(--cinza);font-size:12.5px;}
+  .abas{display:flex;gap:6px;margin-top:18px;}
+  .aba{
+    flex:1;padding:11px 6px;font-size:13.5px;font-weight:700;
+    border:1.5px solid var(--borda);background:#fff;color:var(--cinza);
+    border-radius:10px;cursor:pointer;font-family:inherit;
+  }
+  .aba.on{background:var(--verde);border-color:var(--verde);color:#fff;}
+
+  .caixa-repetido{
+    background:var(--edit-fundo);border:1.5px solid var(--edit-borda);
+    border-radius:12px;padding:14px;
+  }
+  .caixa-repetido h3{color:var(--edit);}
+  .exp-repetido{margin:0 0 12px;font-size:13px;line-height:1.55;color:#6b5a20;}
+  .opcao-repetido{
+    display:flex;gap:10px;align-items:flex-start;
+    background:#fff;border:1px solid var(--edit-borda);border-radius:10px;
+    padding:11px;margin-bottom:8px;cursor:pointer;
+  }
+  .opcao-repetido input{width:24px;height:24px;accent-color:var(--verde);flex-shrink:0;margin:2px 0 0;}
+  .opcao-repetido b{font-size:14px;color:var(--texto);}
+  .opcao-repetido .ordem{font-size:12px;color:var(--cinza);font-weight:700;}
+  .opcao-repetido .det{font-size:12.5px;color:var(--cinza);line-height:1.5;margin-top:3px;}
+
+  .entrega-pessoa{
+    display:flex;gap:10px;align-items:flex-start;
+    background:#fff;border:1.5px solid var(--borda);border-radius:12px;
+    padding:12px;margin-bottom:8px;cursor:pointer;
+  }
+  .entrega-pessoa.feito{background:#f4f8f4;border-color:#cde3cf;opacity:.62;}
+  .entrega-pessoa.feito .ep-nome{text-decoration:line-through;}
+  .entrega-pessoa input{width:26px;height:26px;accent-color:var(--verde);flex-shrink:0;margin:1px 0 0;}
+  .ep-nome{font-size:15px;font-weight:700;color:var(--verde-escuro);margin-bottom:5px;}
+  .ep-itens{font-size:13.5px;line-height:1.7;}
+  .ep-itens b{
+    display:inline-block;min-width:30px;color:var(--verde-escuro);
+    background:var(--verde-claro);border-radius:6px;padding:1px 5px;
+    text-align:center;margin-right:5px;font-size:12.5px;
+  }
+
   .soma-resumo{
     background:var(--verde-claro);border-radius:10px;padding:12px;
     font-size:13.5px;line-height:1.5;color:var(--verde-escuro);font-weight:600;
@@ -219,6 +259,21 @@
     cursor:pointer;font-family:inherit;
   }
 
+  .faixa-prazo{
+    display:none;padding:12px 20px;text-align:center;
+    font-size:13.5px;font-weight:700;line-height:1.5;
+  }
+  .faixa-prazo.on{display:block;}
+  .faixa-prazo.aberto{background:#e8f4e9;color:var(--verde-escuro);border-bottom:1px solid #cde3cf;}
+  .faixa-prazo.fechado{background:#fdf3f2;color:var(--erro);border-bottom:1px solid #f0d5d1;}
+  .card-fechado{
+    display:none;background:#fdf3f2;border:1.5px solid #f0d5d1;border-radius:14px;
+    padding:18px 16px;margin-bottom:16px;text-align:center;
+  }
+  .card-fechado.on{display:block;}
+  .card-fechado h2{margin:0 0 8px;font-size:17px;color:var(--erro);}
+  .card-fechado p{margin:0;font-size:14px;line-height:1.55;color:#8a3123;}
+
   .banner{
     display:none;background:var(--edit-fundo);border:1px solid var(--edit-borda);
     border-radius:12px;padding:12px 14px;margin-bottom:16px;
@@ -257,6 +312,13 @@
     padding:12px;font-size:13px;line-height:1.55;color:#8a3123;margin-bottom:12px;
   }
   .alerta-senha code{background:#fff;padding:1px 5px;border-radius:4px;word-break:break-all;}
+  .linha-switch{display:flex;align-items:center;gap:10px;}
+  .linha-switch input[type=checkbox]{width:26px;height:26px;accent-color:var(--verde);flex-shrink:0;margin:0;}
+  .linha-switch label{margin:0;font-size:15px;font-weight:700;}
+  input[type=date]{
+    width:100%;padding:12px;font-size:16px;border:1.5px solid var(--borda);
+    border-radius:10px;background:#fff;font-family:inherit;color:var(--texto);
+  }
 
   .rodape-txt{text-align:center;font-size:12px;color:var(--cinza);padding:6px 20px 26px;}
   .carregando{text-align:center;padding:40px 20px;color:var(--cinza);font-size:14px;}
@@ -291,7 +353,14 @@
   <span class="autor" id="h-autor"></span>
 </p>
 
+<div class="faixa-prazo" id="faixa-prazo"></div>
+
 <main>
+  <div class="card-fechado" id="card-fechado">
+    <h2>🔒 Pedidos encerrados</h2>
+    <p id="txt-fechado">Os pedidos deste mês já foram fechados com a Korin. Aguarde a próxima rodada.</p>
+  </div>
+
   <div class="banner" id="banner-rascunho">
     Você tem <strong>mudanças na lista que ainda não foram publicadas</strong>.
     Só você está vendo elas. Toque no ✏️ lá em cima e depois em <strong>Publicar</strong>.
@@ -420,6 +489,22 @@
       <label for="cfg-autor">Autor do ensinamento</label>
       <input type="text" id="cfg-autor">
     </div>
+    <div class="campo">
+      <label>Período de pedidos</label>
+      <div class="linha-switch">
+        <input type="checkbox" id="cfg-aberto">
+        <label for="cfg-aberto" id="rot-aberto">Aceitando pedidos</label>
+      </div>
+      <div style="margin-top:10px;">
+        <label for="cfg-prazo" style="font-weight:600;font-size:13px;">Prazo final (opcional)</label>
+        <input type="date" id="cfg-prazo">
+        <div class="ajuda">
+          Com prazo preenchido, a página fecha sozinha depois dessa data.
+          Deixe em branco se preferir fechar na mão.
+        </div>
+      </div>
+    </div>
+
     <div class="campo">
       <label>Quem recebe os pedidos</label>
       <div id="cfg-destinos"></div>
@@ -587,6 +672,12 @@ const clonar = o => JSON.parse(JSON.stringify(o));
 function normalizar(d) {
   ['titulo','subtitulo','frase','autor'].forEach(k => { d[k] = d[k] || ''; });
 
+  // periodo de pedidos: aberto/fechado + prazo opcional
+  if (!d.pedidos || typeof d.pedidos !== 'object') d.pedidos = {};
+  d.pedidos.aberto = d.pedidos.aberto !== false;
+  d.pedidos.prazo = String(d.pedidos.prazo || '');
+
+
   // Aceita tanto o formato novo (varios destinatarios) quanto o antigo (um numero so)
   if (!Array.isArray(d.destinatarios)) d.destinatarios = [];
   d.destinatarios = d.destinatarios
@@ -613,6 +704,50 @@ function aplicarTextos() {
   $('h-autor').textContent = CFG.autor || '';
   $('bloco-frase').style.display = (CFG.frase || CFG.autor) ? '' : 'none';
   $('banner-rascunho').classList.toggle('on', pendente && !editando);
+  aplicarPrazo();
+}
+
+/* Fecha sozinho depois do prazo, alem do interruptor manual */
+function prazoVencido() {
+  if (!CFG.pedidos.prazo) return false;
+  const fim = new Date(CFG.pedidos.prazo + 'T23:59:59');
+  if (isNaN(fim.getTime())) return false;
+  return new Date() > fim;
+}
+
+function estaAberto() {
+  return !!CFG.pedidos.aberto && !prazoVencido();
+}
+
+function formatarPrazo(iso) {
+  const d = new Date(iso + 'T12:00:00');
+  if (isNaN(d.getTime())) return iso;
+  const dias = ['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  return dias[d.getDay()] + ', ' + dd + '/' + mm;
+}
+
+function aplicarPrazo() {
+  const faixa = $('faixa-prazo');
+  const aberto = estaAberto();
+
+  faixa.className = 'faixa-prazo on ' + (aberto ? 'aberto' : 'fechado');
+  if (aberto) {
+    faixa.textContent = CFG.pedidos.prazo
+      ? '📅 Pedidos abertos até ' + formatarPrazo(CFG.pedidos.prazo)
+      : '📅 Pedidos abertos';
+  } else {
+    faixa.textContent = '🔒 Pedidos encerrados';
+  }
+
+  // no modo de edicao ela precisa ver a pagina toda, entao nao bloqueamos
+  const bloquear = !aberto && !editando;
+  $('card-fechado').classList.toggle('on', bloquear);
+  $('txt-fechado').textContent = prazoVencido() && CFG.pedidos.aberto
+    ? 'O prazo era ' + formatarPrazo(CFG.pedidos.prazo) + '. Os pedidos deste mês já foram encerrados — aguarde a próxima rodada.'
+    : 'Os pedidos deste mês já foram fechados com a Korin. Aguarde a próxima rodada.';
+  $('card-cliente').style.display = bloquear ? 'none' : (editando ? 'none' : '');
 }
 
 /* ================= desenhar a lista ================= */
@@ -952,8 +1087,30 @@ function preencherAjustes() {
   $('cfg-frase').value = CFG.frase;
   $('cfg-autor').value = CFG.autor;
   $('chave').value = localStorage.getItem(K_CHAVE) || '';
+  $('cfg-aberto').checked = !!CFG.pedidos.aberto;
+  $('cfg-prazo').value = CFG.pedidos.prazo || '';
+  atualizarRotuloAberto();
   desenharDestinos();
 }
+
+function atualizarRotuloAberto() {
+  $('rot-aberto').textContent = $('cfg-aberto').checked ? 'Aceitando pedidos' : 'Pedidos encerrados';
+}
+
+$('cfg-aberto').addEventListener('change', () => {
+  CFG.pedidos.aberto = $('cfg-aberto').checked;
+  atualizarRotuloAberto();
+  marcar();
+  aplicarPrazo();
+  atualizarTotal();
+});
+
+$('cfg-prazo').addEventListener('change', () => {
+  CFG.pedidos.prazo = $('cfg-prazo').value || '';
+  marcar();
+  aplicarPrazo();
+  atualizarTotal();
+});
 
 function desenharDestinos() {
   const cx = $('cfg-destinos');
@@ -1112,6 +1269,7 @@ function conteudoJson() {
     subtitulo: CFG.subtitulo.trim(),
     frase: CFG.frase.trim(),
     autor: CFG.autor.trim(),
+    pedidos: { aberto: !!CFG.pedidos.aberto, prazo: CFG.pedidos.prazo },
     destinatarios: CFG.destinatarios
       .filter(d => d.numero.trim())
       .map(d => ({ nome: d.nome.trim(), numero: d.numero.trim() })),
@@ -1266,6 +1424,19 @@ function ordemCatalogo() {
 
 const chaveProduto = s => String(s).toUpperCase().replace(/\s+/g, ' ').trim();
 
+const K_ENTREGUE = 'korin-entregues';
+let leitura = null;
+let abaSoma = 'korin';
+
+function entregues() {
+  try { return JSON.parse(localStorage.getItem(K_ENTREGUE) || '[]'); } catch (err) { return []; }
+}
+function marcarEntregue(nome, sim) {
+  const l = entregues().filter(n => n !== nome);
+  if (sim) l.push(nome);
+  localStorage.setItem(K_ENTREGUE, JSON.stringify(l));
+}
+
 function somarPedidos() {
   const cx = $('resultado-soma');
   const bruto = $('colagem').value;
@@ -1275,20 +1446,43 @@ function somarPedidos() {
     return;
   }
 
-  const { pedidos, naoEntendidas } = lerPedidos(bruto);
+  const r = lerPedidos(bruto);
 
-  if (!pedidos.length) {
+  if (!r.pedidos.length) {
     cx.innerHTML = '<div class="msg on falha">Não encontrei nenhum pedido nesse texto. ' +
       'Confira se você copiou as mensagens inteiras, com as linhas dos produtos.</div>';
     return;
   }
 
-  // Junta tudo por produto
+  // Mesma pessoa mandou mais de um pedido? O ultimo vale, os anteriores ficam
+  // desmarcados — mas ela decide.
+  const porNome = {};
+  r.pedidos.forEach(p => {
+    const k = chaveProduto(p.nome);
+    (porNome[k] = porNome[k] || []).push(p);
+  });
+  Object.keys(porNome).forEach(k => {
+    const lista = porNome[k];
+    lista.forEach((p, j) => {
+      p.repetido = lista.length > 1;
+      p.ordem = j + 1;
+      p.deQuantos = lista.length;
+      p.ativo = (j === lista.length - 1);
+    });
+  });
+
+  leitura = r;
+  abaSoma = 'korin';
+  renderSoma();
+}
+
+function calcularSoma() {
   const ordem = ordemCatalogo();
   const porProduto = {};
   let totalGeral = 0;
+  const ativos = leitura.pedidos.filter(p => p.ativo);
 
-  pedidos.forEach(p => {
+  ativos.forEach(p => {
     p.total = 0;
     p.itens.forEach(it => {
       const k = chaveProduto(it.nome);
@@ -1307,90 +1501,210 @@ function somarPedidos() {
     return oa - ob || a.nome.localeCompare(b.nome);
   });
 
+  return { linhas: linhas, totalGeral: totalGeral, ativos: ativos };
+}
+
+function renderSoma() {
+  const cx = $('resultado-soma');
+  const { linhas, totalGeral, ativos } = calcularSoma();
+  const repetidos = leitura.pedidos.filter(p => p.repetido);
   cx.innerHTML = '';
 
-  // Resumo de cima
+  // ---- resumo ----
   const res = document.createElement('div');
   res.className = 'soma-resumo';
-  res.textContent = pedidos.length + (pedidos.length === 1 ? ' pedido somado' : ' pedidos somados') +
+  res.textContent = ativos.length + (ativos.length === 1 ? ' pedido somado' : ' pedidos somados') +
     ' · ' + linhas.length + ' produtos diferentes';
   cx.appendChild(res);
 
-  // Bloco 1: o que pedir para a Korin
-  const b1 = document.createElement('div');
-  b1.className = 'soma-bloco';
-  b1.innerHTML = '<h3>🛒 Pedir para a Korin</h3>';
-  linhas.forEach(l => {
-    const d = document.createElement('div');
-    d.className = 'soma-linha' + (l.conhecido ? '' : ' desconhecido');
-    const q = document.createElement('div'); q.className = 'q'; q.textContent = l.qtd + 'x';
-    const n = document.createElement('div'); n.className = 'n'; n.textContent = l.nome;
-    const v = document.createElement('div'); v.className = 'v'; v.textContent = brl(l.valor);
-    d.appendChild(q); d.appendChild(n); d.appendChild(v);
-    b1.appendChild(d);
-  });
-  const tot = document.createElement('div');
-  tot.className = 'soma-total';
-  tot.innerHTML = '<span>Total geral</span><span>' + brl(totalGeral) + '</span>';
-  b1.appendChild(tot);
-  cx.appendChild(b1);
+  // ---- pedidos repetidos ----
+  if (repetidos.length) {
+    const b = document.createElement('div');
+    b.className = 'soma-bloco caixa-repetido';
+    const h = document.createElement('h3');
+    h.textContent = '⚠️ Pedido repetido';
+    b.appendChild(h);
 
-  // Bloco 2: quanto cada pessoa deve
-  const b2 = document.createElement('div');
-  b2.className = 'soma-bloco';
-  b2.innerHTML = '<h3>💰 Quanto cada um paga</h3>';
-  pedidos.forEach(p => {
-    const d = document.createElement('div');
-    d.className = 'soma-pessoa';
-    const cab = document.createElement('div');
-    cab.innerHTML = '<b></b> — <b></b>';
-    cab.querySelectorAll('b')[0].textContent = p.nome;
-    cab.querySelectorAll('b')[1].textContent = brl(p.total);
-    const det = document.createElement('div');
-    det.className = 'det';
-    det.textContent = p.itens.map(i => i.qtd + 'x ' + i.nome).join(' · ');
-    d.appendChild(cab); d.appendChild(det);
-    b2.appendChild(d);
-  });
-  cx.appendChild(b2);
+    const exp = document.createElement('p');
+    exp.className = 'exp-repetido';
+    exp.textContent = 'A mesma pessoa aparece mais de uma vez. Deixei marcado só o último de cada ' +
+      'uma, que costuma ser o corrigido. Confira e marque o certo — só os marcados entram na conta.';
+    b.appendChild(exp);
 
-  // Bloco 3: o que nao foi entendido — nunca some calado
-  if (naoEntendidas.length) {
+    repetidos.forEach(p => {
+      const linha = document.createElement('label');
+      linha.className = 'opcao-repetido';
+
+      const chk = document.createElement('input');
+      chk.type = 'checkbox';
+      chk.checked = p.ativo;
+      chk.addEventListener('change', () => { p.ativo = chk.checked; renderSoma(); });
+
+      const txt = document.createElement('div');
+      const t1 = document.createElement('div');
+      t1.innerHTML = '<b></b> <span class="ordem"></span>';
+      t1.querySelector('b').textContent = p.nome;
+      t1.querySelector('.ordem').textContent = '(' + p.ordem + 'º de ' + p.deQuantos + ')';
+      const t2 = document.createElement('div');
+      t2.className = 'det';
+      t2.textContent = p.itens.map(i => i.qtd + 'x ' + i.nome).join(' · ');
+      txt.appendChild(t1);
+      txt.appendChild(t2);
+
+      linha.appendChild(chk);
+      linha.appendChild(txt);
+      b.appendChild(linha);
+    });
+
+    cx.appendChild(b);
+  }
+
+  // ---- abas ----
+  const abas = document.createElement('div');
+  abas.className = 'abas';
+  [['korin', '🛒 Korin'], ['cobranca', '💰 Cobrança'], ['entrega', '📦 Entrega']].forEach(a => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'aba' + (abaSoma === a[0] ? ' on' : '');
+    b.textContent = a[1];
+    b.addEventListener('click', () => { abaSoma = a[0]; renderSoma(); });
+    abas.appendChild(b);
+  });
+  cx.appendChild(abas);
+
+  const corpo = document.createElement('div');
+  corpo.className = 'soma-bloco';
+  cx.appendChild(corpo);
+
+  const acoes = document.createElement('div');
+  acoes.className = 'botoes';
+  acoes.style.marginTop = '16px';
+
+  // ---- aba: pedir para a Korin ----
+  if (abaSoma === 'korin') {
+    linhas.forEach(l => {
+      const d = document.createElement('div');
+      d.className = 'soma-linha' + (l.conhecido ? '' : ' desconhecido');
+      const q = document.createElement('div'); q.className = 'q'; q.textContent = l.qtd + 'x';
+      const n = document.createElement('div'); n.className = 'n'; n.textContent = l.nome;
+      const v = document.createElement('div'); v.className = 'v'; v.textContent = brl(l.valor);
+      d.appendChild(q); d.appendChild(n); d.appendChild(v);
+      corpo.appendChild(d);
+    });
+    const tot = document.createElement('div');
+    tot.className = 'soma-total';
+    tot.innerHTML = '<span>Total geral</span><span></span>';
+    tot.querySelectorAll('span')[1].textContent = brl(totalGeral);
+    corpo.appendChild(tot);
+
+    acoes.appendChild(botaoCopiar('📋 Copiar lista da Korin', () => {
+      const l = ['PEDIDO PARA A KORIN', ''];
+      linhas.forEach(x => l.push(x.qtd + 'x ' + x.nome));
+      l.push('');
+      l.push('Total: ' + brl(totalGeral) + ' · ' + ativos.length + ' pedidos');
+      return l.join('\n');
+    }));
+  }
+
+  // ---- aba: quanto cada um paga ----
+  if (abaSoma === 'cobranca') {
+    ativos.forEach(p => {
+      const d = document.createElement('div');
+      d.className = 'soma-pessoa';
+      const cab = document.createElement('div');
+      cab.innerHTML = '<b></b> — <b></b>';
+      cab.querySelectorAll('b')[0].textContent = p.nome;
+      cab.querySelectorAll('b')[1].textContent = brl(p.total);
+      const det = document.createElement('div');
+      det.className = 'det';
+      det.textContent = p.itens.map(i => i.qtd + 'x ' + i.nome).join(' · ');
+      d.appendChild(cab); d.appendChild(det);
+      corpo.appendChild(d);
+    });
+    const tot = document.createElement('div');
+    tot.className = 'soma-total';
+    tot.innerHTML = '<span>Total a receber</span><span></span>';
+    tot.querySelectorAll('span')[1].textContent = brl(totalGeral);
+    corpo.appendChild(tot);
+
+    acoes.appendChild(botaoCopiar('📋 Copiar cobrança', () => {
+      const l = ['QUANTO CADA UM PAGA', ''];
+      ativos.forEach(p => l.push(p.nome + ' — ' + brl(p.total)));
+      l.push('');
+      l.push('Total: ' + brl(totalGeral));
+      return l.join('\n');
+    }));
+  }
+
+  // ---- aba: separacao para entrega ----
+  if (abaSoma === 'entrega') {
+    const jaEntregues = entregues();
+    const prontos = ativos.filter(p => jaEntregues.indexOf(p.nome) >= 0).length;
+
+    const prog = document.createElement('div');
+    prog.className = 'soma-resumo';
+    prog.style.marginBottom = '12px';
+    prog.textContent = prontos + ' de ' + ativos.length + ' já entregues';
+    corpo.appendChild(prog);
+
+    ativos.forEach(p => {
+      const feito = jaEntregues.indexOf(p.nome) >= 0;
+      const d = document.createElement('label');
+      d.className = 'entrega-pessoa' + (feito ? ' feito' : '');
+
+      const chk = document.createElement('input');
+      chk.type = 'checkbox';
+      chk.checked = feito;
+      chk.addEventListener('change', () => { marcarEntregue(p.nome, chk.checked); renderSoma(); });
+
+      const txt = document.createElement('div');
+      const nome = document.createElement('div');
+      nome.className = 'ep-nome';
+      nome.textContent = p.nome;
+      const itens = document.createElement('div');
+      itens.className = 'ep-itens';
+      p.itens.forEach(i => {
+        const li = document.createElement('div');
+        li.innerHTML = '<b></b> <span></span>';
+        li.querySelector('b').textContent = i.qtd + 'x';
+        li.querySelector('span').textContent = i.nome;
+        itens.appendChild(li);
+      });
+      txt.appendChild(nome);
+      txt.appendChild(itens);
+
+      d.appendChild(chk);
+      d.appendChild(txt);
+      corpo.appendChild(d);
+    });
+
+    const limpar = document.createElement('button');
+    limpar.type = 'button';
+    limpar.className = 'btn btn-perigo';
+    limpar.textContent = '↺ Limpar marcações (nova rodada)';
+    limpar.addEventListener('click', () => {
+      if (!confirm('Desmarcar todas as entregas? Use isto ao começar uma nova rodada de pedidos.')) return;
+      localStorage.removeItem(K_ENTREGUE);
+      renderSoma();
+    });
+    acoes.appendChild(limpar);
+  }
+
+  cx.appendChild(acoes);
+
+  // ---- linhas ignoradas: nunca somar calado ----
+  if (leitura.naoEntendidas.length) {
     const b3 = document.createElement('div');
     b3.className = 'soma-bloco';
     b3.innerHTML = '<h3>⚠️ Linhas que eu ignorei</h3>';
     const p = document.createElement('div');
     p.className = 'msg on falha';
-    p.textContent = 'Estas ' + naoEntendidas.length + ' linha(s) não pareciam produto e ficaram de fora. ' +
-      'Confira se não perdi nada: ' + naoEntendidas.slice(0, 12).join(' | ') +
-      (naoEntendidas.length > 12 ? ' …' : '');
+    p.textContent = 'Estas ' + leitura.naoEntendidas.length + ' linha(s) não pareciam produto e ficaram de fora. ' +
+      'Confira se não perdi nada: ' + leitura.naoEntendidas.slice(0, 12).join(' | ') +
+      (leitura.naoEntendidas.length > 12 ? ' …' : '');
     b3.appendChild(p);
     cx.appendChild(b3);
   }
-
-  // Botoes de copiar
-  const acoes = document.createElement('div');
-  acoes.className = 'botoes';
-  acoes.style.marginTop = '16px';
-
-  acoes.appendChild(botaoCopiar('📋 Copiar lista da Korin', () => {
-    const l = ['PEDIDO PARA A KORIN', ''];
-    linhas.forEach(x => l.push(x.qtd + 'x ' + x.nome));
-    l.push('');
-    l.push('Total: ' + brl(totalGeral) + ' · ' + pedidos.length + ' pedidos');
-    return l.join('\n');
-  }));
-
-  acoes.appendChild(botaoCopiar('📋 Copiar cobrança', () => {
-    const l = ['QUANTO CADA UM PAGA', ''];
-    pedidos.forEach(p => l.push(p.nome + ' — ' + brl(p.total)));
-    l.push('');
-    l.push('Total: ' + brl(totalGeral));
-    return l.join('\n');
-  }));
-
-  cx.appendChild(acoes);
-  cx.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function botaoCopiar(rotulo, gerar) {
@@ -1442,10 +1756,14 @@ function atualizarTotal() {
     itens += q;
   }));
   $('total').textContent = brl(total);
-  $('contador').textContent = itens === 0
-    ? 'Nenhum item selecionado'
-    : itens + (itens === 1 ? ' item selecionado' : ' itens selecionados');
-  $('btn-finalizar').disabled = itens === 0;
+  const aberto = estaAberto();
+  $('contador').textContent = !aberto
+    ? 'Pedidos encerrados'
+    : (itens === 0
+        ? 'Nenhum item selecionado'
+        : itens + (itens === 1 ? ' item selecionado' : ' itens selecionados'));
+  $('btn-finalizar').disabled = itens === 0 || !aberto;
+  $('btn-finalizar').textContent = aberto ? '📲 Enviar pedido' : '🔒 Encerrado';
 }
 
 function montarTexto() {
